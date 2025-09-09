@@ -1,19 +1,49 @@
-<script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'it'; // For example, enter 'en' or 'en-US'
-
-			embeddedservice_bootstrap.init(
-				'00DKL000000H0Nk',
-				'Github_Messaging_Setting',
-				'https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799',
-				{
-					scrt2URL: 'https://pianidibobbio--dev.sandbox.my.salesforce-scrt.com'
-				}
-			);
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
-</script>
-<script type='text/javascript' src='https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Preview Pian di Bobbio + Agentforce</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #preview-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            border: none;
+            z-index: 1;
+        }
+        /* Salesforce widget sopra */
+        #sf-widget {
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <iframe id="preview-bg" src="https://www.pianidibobbio.com/it/" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    <div id="sf-widget">
+        <script type='text/javascript'>
+            function initEmbeddedMessaging() {
+                try {
+                    embeddedservice_bootstrap.settings.language = 'it';
+                    embeddedservice_bootstrap.init(
+                        '00DKL000000H0Nk',
+                        'Github_Messaging_Setting',
+                        'https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799',
+                        {
+                            scrt2URL: 'https://pianidibobbio--dev.sandbox.my.salesforce-scrt.com'
+                        }
+                    );
+                } catch (err) {
+                    console.error('Error loading Embedded Messaging: ', err);
+                }
+            };
+        </script>
+        <script type='text/javascript' src='https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+    </div>
+</body>
+</html>
