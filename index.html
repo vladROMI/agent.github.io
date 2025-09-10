@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Preview Piani di Bobbio + Agentforce</title>
+    <title>Preview Pian di Bobbio + Agentforce</title>
     <style>
         html, body {
             height: 100%;
@@ -17,160 +17,91 @@
             z-index: 1;
         }
         
-        /* Logo e testo overlay */
-        #logo-overlay {
+        #main-container {
             position: fixed;
-            top: 2vh;
-            left: 2vw;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 3;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1.5vh 1.5vw;
+            align-items: center;
+            text-align: center;
+        }
+        
+        #logo {
+            max-width: 20vw;
+            max-height: 15vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 2vh;
+        }
+        
+        #test-text {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: clamp(16px, 4vw, 32px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0 0 3vh 0;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1vh 2vw;
             border-radius: 1vh;
             backdrop-filter: blur(5px);
             box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.2);
         }
         
-        #logo {
-            max-width: 15vw;
-            max-height: 8vh;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            margin-bottom: 1vh;
-        }
-        
-        #test-text {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: clamp(12px, 2.5vw, 24px);
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Freccia che punta al widget */
-        #arrow-container {
-            position: fixed;
-            bottom: 15vh;
-            right: 15vw;
-            z-index: 3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: none;
-        }
-        
-        #arrow-text {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: clamp(10px, 2vw, 18px);
-            font-weight: 600;
-            color: #e74c3c;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 0.5vh 1vw;
-            border-radius: 0.5vh;
-            margin-bottom: 1vh;
-            box-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.3);
-            white-space: nowrap;
-        }
-        
-        .arrow {
-            width: 0;
-            height: 0;
-            border-left: clamp(15px, 3vw, 30px) solid transparent;
-            border-right: clamp(15px, 3vw, 30px) solid transparent;
-            border-top: clamp(20px, 4vw, 40px) solid #e74c3c;
-            animation: bounce 2s infinite;
-            filter: drop-shadow(0 0.3vh 0.5vh rgba(0, 0, 0, 0.3));
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0) rotate(45deg);
-            }
-            40% {
-                transform: translateY(-1vh) rotate(45deg);
-            }
-            60% {
-                transform: translateY(-0.5vh) rotate(45deg);
-            }
-        }
-        
-        /* Salesforce widget sopra */
         #sf-widget {
             position: relative;
             z-index: 2;
         }
         
-        /* Media queries per dispositivi molto piccoli */
         @media (max-width: 480px) {
-            #logo-overlay {
-                top: 1vh;
-                left: 1vw;
-                padding: 1vh 2vw;
-            }
-            
             #logo {
-                max-width: 25vw;
-                max-height: 6vh;
+                max-width: 40vw;
+                max-height: 12vh;
             }
             
-            #arrow-container {
-                bottom: 12vh;
-                right: 5vw;
+            #test-text {
+                font-size: clamp(14px, 5vw, 24px);
+                padding: 1vh 3vw;
             }
-        }
-        
-        /* Media queries per schermi molto grandi */
+        }        
         @media (min-width: 1920px) {
             #logo {
-                max-width: 12vw;
-                max-height: 10vh;
-            }
-            
-            #arrow-container {
-                bottom: 18vh;
-                right: 12vw;
+                max-width: 15vw;
+                max-height: 20vh;
             }
         }
     </style>
 </head>
 <body>
-    <iframe id="preview-bg" src="https://www.pianidibobbio.com/it/" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
-    
-    <!-- Logo e testo overlay -->
-    <div id="logo-overlay">
+    <iframe id="preview-bg" src="https://www.pianidibobbio.com/it/" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>    
+    <div id="main-container">
         <img id="logo" src="bobbio_logo.png" alt="Bobbio Logo">
         <p id="test-text">TEST Agentforce</p>
-    </div>
-    
-    <!-- Freccia che punta al widget -->
-    <div id="arrow-container">
-        <div id="arrow-text">Chat Agentforce</div>
-        <div class="arrow"></div>
-    </div>
-    
-    <div id="sf-widget">
-        <script type='text/javascript'>
-            function initEmbeddedMessaging() {
-                try {
-                    embeddedservice_bootstrap.settings.language = 'it';
-                    embeddedservice_bootstrap.init(
-                        '00DKL000000H0Nk',
-                        'Github_Messaging_Setting',
-                        'https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799',
-                        {
-                            scrt2URL: 'https://pianidibobbio--dev.sandbox.my.salesforce-scrt.com'
-                        }
-                    );
-                } catch (err) {
-                    console.error('Error loading Embedded Messaging: ', err);
-                }
-            };
-        </script>
-        <script type='text/javascript' src='https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+        
+        <div id="sf-widget">
+            <script type='text/javascript'>
+                function initEmbeddedMessaging() {
+                    try {
+                        embeddedservice_bootstrap.settings.language = 'it';
+                        embeddedservice_bootstrap.init(
+                            '00DKL000000H0Nk',
+                            'Github_Messaging_Setting',
+                            'https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799',
+                            {
+                                scrt2URL: 'https://pianidibobbio--dev.sandbox.my.salesforce-scrt.com'
+                            }
+                        );
+                    } catch (err) {
+                        console.error('Error loading Embedded Messaging: ', err);
+                    }
+                };
+            </script>
+            <script type='text/javascript' src='https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+        </div>
     </div>
 </body>
 </html>
