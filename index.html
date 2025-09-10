@@ -4,104 +4,61 @@
     <meta charset="UTF-8">
     <title>Preview Pian di Bobbio + Agentforce</title>
     <style>
-        html, body {
-            height: 100%;
+        body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-        }
-        #preview-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            border: none;
-            z-index: 1;
-        }
-        
-        #main-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 3;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .main-content {
             text-align: center;
+            margin-bottom: 50px;
         }
         
-        #logo {
-            max-width: 20vw;
-            max-height: 15vh;
-            width: auto;
+        .logo {
+            max-width: 300px;
             height: auto;
-            object-fit: contain;
-            margin-bottom: 2vh;
+            margin-bottom: 20px;
         }
         
-        #test-text {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: clamp(16px, 4vw, 32px);
+        .title {
+            font-size: 24px;
             font-weight: bold;
-            color: #2c3e50;
-            margin: 0 0 3vh 0;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.8);
-            padding: 1vh 2vw;
-            border-radius: 1vh;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.2);
-        }
-        
-        #sf-widget {
-            position: relative;
-            z-index: 2;
-        }
-        
-        @media (max-width: 480px) {
-            #logo {
-                max-width: 40vw;
-                max-height: 12vh;
-            }
-            
-            #test-text {
-                font-size: clamp(14px, 5vw, 24px);
-                padding: 1vh 3vw;
-            }
-        }        
-        @media (min-width: 1920px) {
-            #logo {
-                max-width: 15vw;
-                max-height: 20vh;
-            }
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <iframe id="preview-bg" src="https://www.pianidibobbio.com/it/" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>    
-    <div id="main-container">
-        <img id="logo" src="bobbio_logo.png" alt="Bobbio Logo">
-        <p id="test-text">TEST Agentforce</p>
-        
-        <div id="sf-widget">
-            <script type='text/javascript'>
-                function initEmbeddedMessaging() {
-                    try {
-                        embeddedservice_bootstrap.settings.language = 'it';
-                        embeddedservice_bootstrap.init(
-                            '00DKL000000H0Nk',
-                            'Github_Messaging_Setting',
-                            'https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799',
-                            {
-                                scrt2URL: 'https://pianidibobbio--dev.sandbox.my.salesforce-scrt.com'
-                            }
-                        );
-                    } catch (err) {
-                        console.error('Error loading Embedded Messaging: ', err);
-                    }
-                };
-            </script>
-            <script type='text/javascript' src='https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-        </div>
+    <div class="main-content">
+        <img src="bobbio_logo.png" alt="Bobbio Logo" class="logo">
+        <div class="title">TEST Agentforce</div>
+    </div>
+    
+    <div id="sf-widget">
+        <script type='text/javascript'>
+            function initEmbeddedMessaging() {
+                try {
+                    embeddedservice_bootstrap.settings.language = 'it';
+                    embeddedservice_bootstrap.init(
+                        '00DKL000000H0Nk',
+                        'Github_Messaging_Setting',
+                        'https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799',
+                        {
+                            scrt2URL: 'https://pianidibobbio--dev.sandbox.my.salesforce-scrt.com'
+                        }
+                    );
+                } catch (err) {
+                    console.error('Error loading Embedded Messaging: ', err);
+                }
+            };
+        </script>
+        <script type='text/javascript' src='https://pianidibobbio--dev.sandbox.my.site.com/ESWGithubMessagingSetti1757424339799/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
     </div>
 </body>
 </html>
