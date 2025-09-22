@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Preview Piani di Bobbio + Agentforce</title>
+    <title>Preview Agentforce</title>
     <style>
         body {
             margin: 0;
@@ -14,41 +14,37 @@
             align-items: center;
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
-        }
-        
-        .main-content {
             text-align: center;
-            margin-bottom: 50px;
         }
-        
+
         .logo {
-            max-width: 300px;
+            max-width: 250px;
             height: auto;
             margin-bottom: 20px;
         }
-        
+
         .title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="main-content">
-        <img src="bobbio_logo.png" alt="Bobbio Logo" class="logo">
-        <div class="title">TEST Agentforce</div>
-    </div>
-    
-    <div id="sf-widget"></div>
+    <!-- Logo -->
+    <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
 
-    <script type="text/javascript">
+    <!-- Testo -->
+    <div class="title">TEST Agentforce</div>
+
+    <!-- Snippet Salesforce -->
+    <script type='text/javascript'>
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = 'it'; 
                 embeddedservice_bootstrap.init(
-                    '00DKB0000014aXF', 
-                    'GitHub', 
+                    '00DKB0000014aXF',
+                    'GitHub',
                     'https://pianidibobbio.my.site.com/ESWGitHub1758528533003',
                     {
                         scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
@@ -57,13 +53,8 @@
             } catch (err) {
                 console.error('Error loading Embedded Messaging: ', err);
             }
-        }
+        };
     </script>
-
-    <script 
-        type="text/javascript" 
-        src="https://pianidibobbio.my.site.com/ESWGitHub1758528533003/assets/js/bootstrap.min.js" 
-        onload="initEmbeddedMessaging()">
-    </script>
+    <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWGitHub1758528533003/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
