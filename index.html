@@ -37,13 +37,16 @@
     <!-- Testo -->
     <div class="title">TEST Agentforce</div>
 
+
+ 
+	
     <!-- Snippet Salesforce -->
-    <script type='text/javascript'>
+<script type='text/javascript'>
 	function initEmbeddedMessaging() {
 		try {
 			embeddedservice_bootstrap.settings.language = 'it'; // For example, enter 'en' or 'en-US'
-
-			 embeddedservice_bootstrap.settings.embeddedServiceConfig = {
+			
+			embeddedservice_bootstrap.settings.embeddedServiceConfig = {
                     branding: {
                         launcherImgURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=",
                     }
@@ -53,12 +56,20 @@
                         helpButtonLabel: "Serve aiuto?"
                     }
                 };
+			embeddedservice_bootstrap.init(
+				'00DKB0000014aXF',
+				'Web',
+				'https://pianidibobbio.my.site.com/ESWWeb1761557111965',
+				{
+					scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
+				}
+			);
 		} catch (err) {
 			console.error('Error loading Embedded Messaging: ', err);
 		}
 	};
 </script>
-<script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebDEMO1760449931371/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+<script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWeb1761557111965/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
 
 
