@@ -40,37 +40,53 @@
 
  
 	
-    <!-- Snippet Salesforce -->
-<script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'it'; // For example, enter 'en' or 'en-US'
-			
-			embeddedservice_bootstrap.settings.embeddedServiceConfig = {
-                    branding: {
-                        launcherImgURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=",
-                    }
-                };
-                embeddedservice_bootstrap.settings.language = {
-                    eswConfig: {
-                        helpButtonLabel: "Serve aiuto?"
-                    }
-                };
-			embeddedservice_bootstrap.init(
-				'00DKB0000014aXF',
-				'Web',
-				'https://pianidibobbio.my.site.com/ESWWeb1761557111965',
-				{
-					scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
-				}
-			);
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
-</script>
-<script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWeb1761557111965/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+ <script type="text/javascript">
+  window.addEventListener("load", function () {
+    try {
+      // Rileva la lingua dal path
+      const path = window.location.pathname;
+      const isEnglish = path.includes('/en/');
+      const language = isEnglish ? 'en' : 'it';
+      const labelText = isEnglish ? 'Need help?' : 'Serve aiuto?';
 
+      // Imposta la lingua
+      embeddedservice_bootstrap.settings.language = language;
+
+      embeddedservice_bootstrap.init(
+        "00DKB0000014aXF",                
+        "Web",                             
+        "https://pianidibobbio.my.site.com/ESWWeb1761557111965", 
+        {
+          scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
+
+          // PERSONALIZZAZIONE LAUNCHER
+          branding: {
+            launcher: {
+              label: labelText,
+              iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=", 
+              iconSize: "large",
+              position: "right",       
+              rounded: true            
+            },
+
+            // COLORI DEL BOTTONE E TESTO
+            colors: {
+              brandPrimary: "#0070d2",      // Sfondo del launcher (blu)
+              brandSecondary: "#005fb2",    // Hover/focus
+              launcherBackground: "#0070d2", // Sfondo bottone
+              launcherText: "#ffffff"       // Testo bianco (visibile su blu)
+            }
+          }
+        }
+      );
+    } catch (e) {
+      console.error("Errore Embedded Service Web v2:", e);
+    }
+  });
+</script>
+
+<!-- Script Salesforce V2 -->
+<script src="https://service.force.com/embeddedservice/5.0/esw.min.js"></script>
 
 
 </body>
