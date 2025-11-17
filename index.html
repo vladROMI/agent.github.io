@@ -26,23 +26,75 @@
             font-size: 22px;
             font-weight: bold;
             color: #333;
+            margin-bottom: 20px;
+        }
+        .language-selector {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+        }
+        .lang-btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #0070d2;
+            background-color: white;
+            color: #0070d2;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .lang-btn:hover {
+            background-color: #0070d2;
+            color: white;
+        }
+        .lang-btn.active {
+            background-color: #0070d2;
+            color: white;
         }
     </style>
 </head>
 <body>
     <!-- Logo -->
     <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
+    
     <!-- Testo -->
     <div class="title">TEST Agentforce</div>
+    
+    <!-- Selettore Lingua -->
+    <div class="language-selector">
+        <button class="lang-btn active" onclick="changeLanguage('it')" id="btn-it">🇮🇹 Italiano</button>
+        <button class="lang-btn" onclick="changeLanguage('en')" id="btn-en">🇬🇧 English</button>
+    </div>
  
     <script type="text/javascript">
+        let currentLanguage = 'it';
+        let isInitialized = false;
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Aggiorna lo stile dei bottoni
+            document.getElementById('btn-it').classList.toggle('active', lang === 'it');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            
+            // Reinizializza il widget con la nuova lingua
+            if (isInitialized && typeof embeddedservice_bootstrap !== 'undefined') {
+                // Rimuovi il widget esistente (se presente)
+                const existingWidget = document.querySelector('[data-test-id="embeddedMessagingFrame"]');
+                if (existingWidget) {
+                    existingWidget.remove();
+                }
+                
+                // Reinizializza
+                initEmbeddedMessaging();
+            }
+        }
+
         function initEmbeddedMessaging() {
             try {
-                // Rileva la lingua dal path
-                const path = window.location.pathname;
-                const isEnglish = path.includes('/en/');
-                const language = isEnglish ? 'en' : 'it';
-                const labelText = isEnglish ? 'Need help?' : 'Serve aiuto?';
+                const language = currentLanguage;
+                const labelText = language === 'en' ? 'Need help?' : 'Serve aiuto?';
                 
                 // Imposta la lingua
                 embeddedservice_bootstrap.settings.language = language;
@@ -72,13 +124,14 @@
                         }
                     }
                 );
+                
+                isInitialized = true;
             } catch (err) {
                 console.error("Errore Embedded Service Web v2:", err);
             }
         }
     </script>
     
-    <!-- QUESTO È LO SCRIPT CORRETTO PER AGENTFORCE/MESSAGING -->
     <script 
         type="text/javascript" 
         src="https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js" 
