@@ -26,30 +26,23 @@
             font-size: 22px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <!-- Logo -->
     <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
-    
-    <!-- Testo -->
     <div class="title">TEST Agentforce</div>
  
     <script type="text/javascript">
         function initEmbeddedMessaging() {
             try {
-                // Rileva la lingua dal path
                 const path = window.location.pathname;
                 const language = path.includes('/en/') ? 'en' : 'it';
                 
-                console.log('Inizializzazione lingua:', language);
+                console.log('🚀 Inizializzazione con lingua:', language);
                 
-                // IMPOSTAZIONE LINGUA (OBBLIGATORIA)
                 embeddedservice_bootstrap.settings.language = language;
                 
-                // Inizializza il widget
                 embeddedservice_bootstrap.init(
                     "00DKB0000014aXF",                
                     "Web",                             
@@ -59,10 +52,10 @@
                     }
                 );
                 
-                console.log('Widget inizializzato!');
+                console.log('✅ Widget inizializzato!');
                 
             } catch (err) {
-                console.error("Errore:", err);
+                console.error("❌ Errore:", err);
             }
         }
     </script>
