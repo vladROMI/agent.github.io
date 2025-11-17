@@ -28,42 +28,23 @@
             color: #333;
         }
         
-        /* NASCONDI IL BOTTONE DEFAULT */
+        /* PERSONALIZZAZIONE LAUNCHER BUTTON */
+        /* Cambia il colore di sfondo del bottone */
         .embeddedMessagingConversationButton {
-            display: none !important;
+            background-color: #0070d2 !important;
         }
         
-        /* BOTTONE CUSTOM */
-        .custom-chat-button {
-            position: fixed;
-            bottom: 30px;
-            right: 25px;
-            background-color: #0070d2;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 50px;
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            z-index: 9999;
+        /* Cambia il colore del testo */
+        .embeddedMessagingConversationButton .message {
+            color: #ffffff !important;
         }
         
-        .custom-chat-button:hover {
-            background-color: #005fb2;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-        }
-        
-        .custom-chat-button img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+        /* Personalizza l'icona */
+        .embeddedMessagingConversationButton .icon {
+            background-image: url('https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=') !important;
+            background-size: cover !important;
+            width: 48px !important;
+            height: 48px !important;
         }
     </style>
 </head>
@@ -71,48 +52,18 @@
     <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
     <div class="title">TEST Agentforce</div>
  
-    <!-- BOTTONE CUSTOM -->
-    <button class="custom-chat-button" id="customChatBtn" onclick="launchCustomChat()">
-        <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
-        <span id="chatButtonText">Serve aiuto?</span>
-    </button>
-
     <script type="text/javascript">
-        let currentLanguage = 'it';
-        
-        function updateButtonText() {
-            const path = window.location.pathname;
-            const language = path.includes('/en/') ? 'en' : 'it';
-            const labelText = language === 'en' ? 'Need help?' : 'Serve aiuto?';
-            
-            document.getElementById('chatButtonText').textContent = labelText;
-            currentLanguage = language;
-        }
-        
-        function launchCustomChat() {
-            // Lancia la chat usando l'API
-            embeddedservice_bootstrap.utilAPI.launchChat()
-                .then(() => {
-                    console.log('Chat lanciata con successo');
-                    // Nascondi il bottone custom quando la chat si apre
-                    document.getElementById('customChatBtn').style.display = 'none';
-                })
-                .catch((err) => {
-                    console.error('Errore lancio chat:', err);
-                });
-        }
-        
         function initEmbeddedMessaging() {
             try {
-                updateButtonText();
+                // Rileva la lingua dal path
+                const path = window.location.pathname;
+                const language = path.includes('/en/') ? 'en' : 'it';
+                const labelText = language === 'en' ? 'Need help?' : 'Serve aiuto?';
                 
-                console.log('Inizializzazione lingua:', currentLanguage);
-                
-                // NASCONDI IL BOTTONE DEFAULT
-                embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
+                console.log('Inizializzazione lingua:', language);
                 
                 // Imposta la lingua
-                embeddedservice_bootstrap.settings.language = currentLanguage;
+                embeddedservice_bootstrap.settings.language = language;
                 
                 // Inizializza il widget
                 embeddedservice_bootstrap.init(
@@ -124,15 +75,24 @@
                     }
                 );
                 
+                // ASPETTA CHE IL BOTTONE SIA CREATO E PERSONALIZZA IL TESTO
+                window.addEventListener('onEmbeddedMessagingButtonCreated', function() {
+                    console.log('Bottone creato, personalizzo il testo...');
+                    
+                    // Cerca il testo del launcher button
+                    const buttonTextElement = document.querySelector('.embeddedMessagingConversationButton .message');
+                    if (buttonTextElement) {
+                        buttonTextElement.textContent = labelText;
+                        console.log('Testo aggiornato:', labelText);
+                    }
+                });
+                
                 console.log('Widget inizializzato!');
                 
             } catch (err) {
                 console.error("Errore:", err);
             }
         }
-        
-        // Aggiorna il testo quando cambia la pagina
-        window.addEventListener('popstate', updateButtonText);
     </script>
     
     <script 
