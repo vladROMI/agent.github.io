@@ -28,39 +28,6 @@
             color: #333;
             margin-bottom: 20px;
         }
-        .language-selector {
-            margin-bottom: 30px;
-            display: flex;
-            gap: 15px;
-        }
-        .lang-btn {
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border: 2px solid #0070d2;
-            background-color: white;
-            color: #0070d2;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .lang-btn:hover {
-            background-color: #0070d2;
-            color: white;
-        }
-        .lang-btn.active {
-            background-color: #0070d2;
-            color: white;
-        }
-        
-        /* Personalizzazione del launcher button */
-        .embeddedMessagingConversationButton {
-            background-color: #0070d2 !important;
-        }
-        
-        .embeddedMessagingConversationButton .message {
-            color: #ffffff !important;
-        }
     </style>
 </head>
 <body>
@@ -69,63 +36,17 @@
     
     <!-- Testo -->
     <div class="title">TEST Agentforce</div>
-    
-    <!-- Selettore Lingua -->
-    <div class="language-selector">
-        <button class="lang-btn active" onclick="changeLanguage('it')" id="btn-it">🇮🇹 Italiano</button>
-        <button class="lang-btn" onclick="changeLanguage('en')" id="btn-en">🇬🇧 English</button>
-    </div>
  
     <script type="text/javascript">
-        let currentLanguage = 'it';
-        let isInitialized = false;
-
-        function changeLanguage(lang) {
-            currentLanguage = lang;
-            
-            // Aggiorna lo stile dei bottoni
-            document.getElementById('btn-it').classList.toggle('active', lang === 'it');
-            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-            
-            // Aggiorna il testo del launcher
-            updateLauncherText(lang);
-        }
-        
-        function updateLauncherText(lang) {
-            const labelText = lang === 'en' ? 'Need help?' : 'Serve aiuto?';
-            
-            // Cerca il launcher button e aggiorna il testo
-            const checkLauncher = setInterval(() => {
-                const launcherButton = document.querySelector('.embeddedMessagingConversationButton');
-                if (launcherButton) {
-                    const messageElement = launcherButton.querySelector('.message');
-                    if (messageElement) {
-                        messageElement.textContent = labelText;
-                        console.log('Launcher aggiornato:', labelText);
-                    }
-                }
-            }, 100);
-            
-            // Stop dopo 5 secondi
-            setTimeout(() => clearInterval(checkLauncher), 5000);
-        }
-
         function initEmbeddedMessaging() {
             try {
                 // Rileva la lingua dal path
                 const path = window.location.pathname;
-                let language = 'it';
+                const language = path.includes('/en/') ? 'en' : 'it';
                 
-                if (path.includes('/en/')) {
-                    language = 'en';
-                    currentLanguage = 'en';
-                    document.getElementById('btn-it').classList.remove('active');
-                    document.getElementById('btn-en').classList.add('active');
-                }
+                console.log('Inizializzazione lingua:', language);
                 
-                console.log('Inizializzazione con lingua:', language);
-                
-                // Imposta la lingua
+                // IMPOSTAZIONE LINGUA (OBBLIGATORIA)
                 embeddedservice_bootstrap.settings.language = language;
                 
                 // Inizializza il widget
@@ -138,24 +59,10 @@
                     }
                 );
                 
-                isInitialized = true;
-                
-                // Attendi che il launcher sia renderizzato e poi personalizzalo
-                setTimeout(() => {
-                    updateLauncherText(language);
-                    
-                    // Personalizza l'icona se necessario
-                    const launcherIcon = document.querySelector('.embeddedMessagingConversationButton .icon');
-                    if (launcherIcon) {
-                        launcherIcon.style.backgroundImage = 'url(https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=)';
-                        launcherIcon.style.backgroundSize = 'cover';
-                        launcherIcon.style.width = '48px';
-                        launcherIcon.style.height = '48px';
-                    }
-                }, 2000);
+                console.log('Widget inizializzato!');
                 
             } catch (err) {
-                console.error("Errore Embedded Service Web v2:", err);
+                console.error("Errore:", err);
             }
         }
     </script>
