@@ -1,141 +1,133 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Preview Agentforce</title>
-    <link rel="icon" href="data:,">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            text-align: center;
-        }
-        .logo {
-            max-width: 250px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-        .title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        /* BOTTONE CUSTOM */
-        .custom-chat-button {
-            position: fixed;
-            bottom: 30px;
-            right: 25px;
-            background-color: #0070d2;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 50px;
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            z-index: 9999;
-        }
-        
-        .custom-chat-button:hover {
-            background-color: #005fb2;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-        }
-        
-        .custom-chat-button img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Custom Embedded Messaging v2</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      text-align: center;
+    }
+    .logo {
+      max-width: 250px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* BOTTONE CUSTOM */
+    .custom-chat-button {
+      position: fixed;
+      bottom: 30px;
+      right: 25px;
+      background-color: #0070d2;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 50px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      z-index: 9999;
+    }
+
+    .custom-chat-button:hover {
+      background-color: #005fb2;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    .custom-chat-button img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  </style>
 </head>
 <body>
-    <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
-    <div class="title">TEST Agentforce</div>
- 
-    <!-- BOTTONE CUSTOM -->
-    <button class="custom-chat-button" id="customChatBtn">
-        <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat" onerror="this.style.display='none'">
-        <span id="chatButtonText">Serve aiuto?</span>
-    </button>
+  <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
+  <div class="title">TEST Agentforce</div>
 
-    <script type="text/javascript">
-        // Rileva la lingua dal path
-        const path = window.location.pathname;
-        const language = path.includes('/en/') ? 'en' : 'it';
-        const labelText = language === 'en' ? 'Need help?' : 'Serve aiuto?';
-        
-        // Aggiorna il testo del bottone custom
-        document.getElementById('chatButtonText').textContent = labelText;
-        
-        console.log('Inizializzazione lingua:', language);
-        
-        function initEmbeddedMessaging() {
-            try {
-                // PASSO 1: NASCONDI IL BOTTONE DEFAULT (PRIMA DELL'INIT)
-                embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
-                
-                // PASSO 2: IMPOSTA LA LINGUA
-                embeddedservice_bootstrap.settings.language = language;
-                
-                // PASSO 3: INIZIALIZZA IL WIDGET
-                embeddedservice_bootstrap.init(
-                    "00DKB0000014aXF",                
-                    "Web",                             
-                    "https://pianidibobbio.my.site.com/ESWWebtest1763410614711", 
-                    {
-                        scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com"
-                    }
-                );
-                
-                console.log('Widget inizializzato con bottone nascosto');
-                
-            } catch (err) {
-                console.error("Errore:", err);
-            }
-        }
-        
-        // PASSO 4: AGGIUNGI EVENT LISTENER PER QUANDO IL BOTTONE È CREATO
-        window.addEventListener('onEmbeddedMessagingButtonCreated', function() {
-            console.log('Event onEmbeddedMessagingButtonCreated ricevuto');
-            
-            // PASSO 5: AGGIUNGI CLICK LISTENER AL BOTTONE CUSTOM
-            document.getElementById('customChatBtn').addEventListener('click', function() {
-                console.log('Click sul bottone custom, lancio chat...');
-                
-                // PASSO 6: USA L'API PER LANCIARE LA CHAT
-                embeddedservice_bootstrap.utilAPI.launchChat()
-                    .then(function() {
-                        console.log('Chat lanciata con successo!');
-                        // Nascondi il bottone custom quando la chat si apre
-                        document.getElementById('customChatBtn').style.display = 'none';
-                    })
-                    .catch(function(err) {
-                        console.error('Errore lancio chat:', err);
-                    });
-            });
-        });
-        
-    </script>
-    
-    <script 
-        type="text/javascript" 
-        src="https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js" 
-        onload="initEmbeddedMessaging()">
-    </script>
+  <button class="custom-chat-button" id="customChatBtn">
+    <img src="https://pianidibobbio.file.force.com/…/renditionDownload?…"
+         alt="Chat" onerror="this.style.display='none'">
+    <span id="chatButtonText">Serve aiuto?</span>
+  </button>
+
+  <script type="text/javascript">
+    // Determina la lingua (esempio semplificato)
+    const path = window.location.pathname;
+    const language = path.includes('/en/') ? 'en' : 'it';
+    const labelText = language === 'en' ? 'Need help?' : 'Serve aiuto?';
+    document.getElementById('chatButtonText').textContent = labelText;
+
+    function initEmbeddedMessaging() {
+      try {
+        // Nascondi il pulsante di default di Embedded Messaging
+        embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
+
+        // Imposta la lingua del widget
+        embeddedservice_bootstrap.settings.language = language;
+
+        // Inizializza il widget
+        embeddedservice_bootstrap.init(
+          "00DKB0000014aXF", // Org ID esempio
+          "Web",             // Deployment tipo
+          "https://pianidibobbio.my.site.com/ESWWebtest1763410614711", // URL community / site
+          {
+            scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com"
+          }
+        );
+      } catch (err) {
+        console.error("Errore init Embedded Messaging:", err);
+      }
+    }
+
+    // Evento quando il bottone standard (anche se nascosto) è creato
+    window.addEventListener('onEmbeddedMessagingButtonCreated', function() {
+      console.log('Embedded Messaging: onEmbeddedMessagingButtonCreated');
+
+      const btn = document.getElementById('customChatBtn');
+      btn.addEventListener('click', function() {
+        console.log('Click su pulsante custom, lancio chat...');
+        embeddedservice_bootstrap.utilAPI.launchChat()
+          .then(() => {
+            console.log('Chat lanciata con successo');
+            // Nascondi il bottone custom una volta aperta la chat
+            btn.style.display = 'none';
+          })
+          .catch((err) => {
+            console.error('Errore launchChat:', err);
+          });
+      });
+    });
+
+    // Carica lo script bootstrap di Salesforce e inizializza dopo il load
+    (function loadBootstrap() {
+      const s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.src = "https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js";
+      s.onload = initEmbeddedMessaging;
+      document.head.appendChild(s);
+    })();
+  </script>
 </body>
 </html>
