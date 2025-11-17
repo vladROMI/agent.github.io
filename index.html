@@ -52,6 +52,18 @@
             background-color: #0070d2;
             color: white;
         }
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 300px;
+        }
     </style>
 </head>
 <body>
@@ -66,13 +78,25 @@
         <button class="lang-btn active" onclick="changeLanguage('it')" id="btn-it">🇮🇹 Italiano</button>
         <button class="lang-btn" onclick="changeLanguage('en')" id="btn-en">🇬🇧 English</button>
     </div>
+
+    <!-- Debug Info -->
+    <div class="debug-info" id="debug">
+        Caricamento...
+    </div>
  
     <script type="text/javascript">
         let currentLanguage = 'it';
         let isInitialized = false;
 
+        function updateDebug(msg) {
+            const debug = document.getElementById('debug');
+            debug.innerHTML += '<br>' + msg;
+            console.log('[DEBUG]', msg);
+        }
+
         function changeLanguage(lang) {
             currentLanguage = lang;
+            updateDebug('Cambio lingua: ' + lang);
             
             // Aggiorna lo stile dei bottoni
             document.getElementById('btn-it').classList.toggle('active', lang === 'it');
@@ -80,24 +104,21 @@
             
             // Reinizializza il widget con la nuova lingua
             if (isInitialized && typeof embeddedservice_bootstrap !== 'undefined') {
-                // Rimuovi il widget esistente (se presente)
-                const existingWidget = document.querySelector('[data-test-id="embeddedMessagingFrame"]');
-                if (existingWidget) {
-                    existingWidget.remove();
-                }
-                
-                // Reinizializza
+                updateDebug('Reinizializzazione widget...');
                 initEmbeddedMessaging();
             }
         }
 
         function initEmbeddedMessaging() {
             try {
+                updateDebug('Init chiamato - Lingua: ' + currentLanguage);
+                
                 const language = currentLanguage;
                 const labelText = language === 'en' ? 'Need help?' : 'Serve aiuto?';
                 
                 // Imposta la lingua
                 embeddedservice_bootstrap.settings.language = language;
+                updateDebug('Lingua impostata');
                 
                 embeddedservice_bootstrap.init(
                     "00DKB0000014aXF",                
@@ -105,7 +126,6 @@
                     "https://pianidibobbio.my.site.com/ESWWebtest1763410614711", 
                     {
                         scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
-                        // PERSONALIZZAZIONE LAUNCHER
                         branding: {
                             launcher: {
                                 label: labelText,
@@ -114,7 +134,6 @@
                                 position: "right",       
                                 rounded: true            
                             },
-                            // COLORI DEL BOTTONE E TESTO
                             colors: {
                                 brandPrimary: "#0070d2",
                                 brandSecondary: "#005fb2",
@@ -126,10 +145,14 @@
                 );
                 
                 isInitialized = true;
+                updateDebug('Widget inizializzato con successo!');
             } catch (err) {
+                updateDebug('ERRORE: ' + err.message);
                 console.error("Errore Embedded Service Web v2:", err);
             }
         }
+
+        updateDebug('Script caricato, attesa bootstrap...');
     </script>
     
     <script 
