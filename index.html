@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Preview Agentforce</title>
+    <link rel="icon" href="data:,">
     <style>
         body {
             margin: 0;
@@ -34,48 +35,54 @@
     <!-- Testo -->
     <div class="title">TEST Agentforce</div>
  
-    <!-- Script Salesforce Embedded Service Bootstrap (v2) -->
-    <script src="https://service.force.com/embeddedservice/menu/fab.min.js" type="text/javascript"></script>
-    
     <script type="text/javascript">
-        try {
-            // Rileva la lingua dal path
-            const path = window.location.pathname;
-            const isEnglish = path.includes('/en/');
-            const language = isEnglish ? 'en' : 'it';
-            const labelText = isEnglish ? 'Need help?' : 'Serve aiuto?';
-            
-            // Imposta la lingua
-            embeddedservice_bootstrap.settings.language = language;
-            
-            embeddedservice_bootstrap.init(
-                "00DKB0000014aXF",                
-                "Web",                             
-                "https://pianidibobbio.my.site.com/ESWWeb1761557111965", 
-                {
-                    scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
-                    // PERSONALIZZAZIONE LAUNCHER
-                    branding: {
-                        launcher: {
-                            label: labelText,
-                            iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=", 
-                            iconSize: "large",
-                            position: "right",       
-                            rounded: true            
-                        },
-                        // COLORI DEL BOTTONE E TESTO
-                        colors: {
-                            brandPrimary: "#0070d2",      // Sfondo del launcher (blu)
-                            brandSecondary: "#005fb2",    // Hover/focus
-                            launcherBackground: "#0070d2", // Sfondo bottone
-                            launcherText: "#ffffff"       // Testo bianco (visibile su blu)
+        function initEmbeddedMessaging() {
+            try {
+                // Rileva la lingua dal path
+                const path = window.location.pathname;
+                const isEnglish = path.includes('/en/');
+                const language = isEnglish ? 'en' : 'it';
+                const labelText = isEnglish ? 'Need help?' : 'Serve aiuto?';
+                
+                // Imposta la lingua
+                embeddedservice_bootstrap.settings.language = language;
+                
+                embeddedservice_bootstrap.init(
+                    "00DKB0000014aXF",                
+                    "Web",                             
+                    "https://pianidibobbio.my.site.com/ESWWeb1761557111965", 
+                    {
+                        scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
+                        // PERSONALIZZAZIONE LAUNCHER
+                        branding: {
+                            launcher: {
+                                label: labelText,
+                                iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=", 
+                                iconSize: "large",
+                                position: "right",       
+                                rounded: true            
+                            },
+                            // COLORI DEL BOTTONE E TESTO
+                            colors: {
+                                brandPrimary: "#0070d2",
+                                brandSecondary: "#005fb2",
+                                launcherBackground: "#0070d2",
+                                launcherText: "#ffffff"
+                            }
                         }
                     }
-                }
-            );
-        } catch (e) {
-            console.error("Errore Embedded Service Web v2:", e);
+                );
+            } catch (err) {
+                console.error("Errore Embedded Service Web v2:", err);
+            }
         }
+    </script>
+    
+    <!-- QUESTO È LO SCRIPT CORRETTO PER AGENTFORCE/MESSAGING -->
+    <script 
+        type="text/javascript" 
+        src="https://pianidibobbio.my.site.com/ESWWeb1761557111965/assets/js/bootstrap.min.js" 
+        onload="initEmbeddedMessaging()">
     </script>
 </body>
 </html>
