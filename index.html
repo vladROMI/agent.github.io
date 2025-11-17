@@ -52,17 +52,14 @@
             background-color: #0070d2;
             color: white;
         }
-        .debug-info {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.8);
-            color: #0f0;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            max-width: 300px;
+        
+        /* Personalizzazione del launcher button */
+        .embeddedMessagingConversationButton {
+            background-color: #0070d2 !important;
+        }
+        
+        .embeddedMessagingConversationButton .message {
+            color: #ffffff !important;
         }
     </style>
 </head>
@@ -78,81 +75,89 @@
         <button class="lang-btn active" onclick="changeLanguage('it')" id="btn-it">🇮🇹 Italiano</button>
         <button class="lang-btn" onclick="changeLanguage('en')" id="btn-en">🇬🇧 English</button>
     </div>
-
-    <!-- Debug Info -->
-    <div class="debug-info" id="debug">
-        Caricamento...
-    </div>
  
     <script type="text/javascript">
         let currentLanguage = 'it';
         let isInitialized = false;
 
-        function updateDebug(msg) {
-            const debug = document.getElementById('debug');
-            debug.innerHTML += '<br>' + msg;
-            console.log('[DEBUG]', msg);
-        }
-
         function changeLanguage(lang) {
             currentLanguage = lang;
-            updateDebug('Cambio lingua: ' + lang);
             
             // Aggiorna lo stile dei bottoni
             document.getElementById('btn-it').classList.toggle('active', lang === 'it');
             document.getElementById('btn-en').classList.toggle('active', lang === 'en');
             
-            // Reinizializza il widget con la nuova lingua
-            if (isInitialized && typeof embeddedservice_bootstrap !== 'undefined') {
-                updateDebug('Reinizializzazione widget...');
-                initEmbeddedMessaging();
-            }
+            // Aggiorna il testo del launcher
+            updateLauncherText(lang);
+        }
+        
+        function updateLauncherText(lang) {
+            const labelText = lang === 'en' ? 'Need help?' : 'Serve aiuto?';
+            
+            // Cerca il launcher button e aggiorna il testo
+            const checkLauncher = setInterval(() => {
+                const launcherButton = document.querySelector('.embeddedMessagingConversationButton');
+                if (launcherButton) {
+                    const messageElement = launcherButton.querySelector('.message');
+                    if (messageElement) {
+                        messageElement.textContent = labelText;
+                        console.log('Launcher aggiornato:', labelText);
+                    }
+                }
+            }, 100);
+            
+            // Stop dopo 5 secondi
+            setTimeout(() => clearInterval(checkLauncher), 5000);
         }
 
         function initEmbeddedMessaging() {
             try {
-                updateDebug('Init chiamato - Lingua: ' + currentLanguage);
+                // Rileva la lingua dal path
+                const path = window.location.pathname;
+                let language = 'it';
                 
-                const language = currentLanguage;
-                const labelText = language === 'en' ? 'Need help?' : 'Serve aiuto?';
+                if (path.includes('/en/')) {
+                    language = 'en';
+                    currentLanguage = 'en';
+                    document.getElementById('btn-it').classList.remove('active');
+                    document.getElementById('btn-en').classList.add('active');
+                }
+                
+                console.log('Inizializzazione con lingua:', language);
                 
                 // Imposta la lingua
                 embeddedservice_bootstrap.settings.language = language;
-                updateDebug('Lingua impostata');
                 
+                // Inizializza il widget
                 embeddedservice_bootstrap.init(
                     "00DKB0000014aXF",                
                     "Web",                             
                     "https://pianidibobbio.my.site.com/ESWWebtest1763410614711", 
                     {
-                        scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
-                        branding: {
-                            launcher: {
-                                label: labelText,
-                                iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=", 
-                                iconSize: "large",
-                                position: "right",       
-                                rounded: true            
-                            },
-                            colors: {
-                                brandPrimary: "#0070d2",
-                                brandSecondary: "#005fb2",
-                                launcherBackground: "#0070d2",
-                                launcherText: "#ffffff"
-                            }
-                        }
+                        scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com"
                     }
                 );
                 
                 isInitialized = true;
-                updateDebug('Widget inizializzato con successo!');
+                
+                // Attendi che il launcher sia renderizzato e poi personalizzalo
+                setTimeout(() => {
+                    updateLauncherText(language);
+                    
+                    // Personalizza l'icona se necessario
+                    const launcherIcon = document.querySelector('.embeddedMessagingConversationButton .icon');
+                    if (launcherIcon) {
+                        launcherIcon.style.backgroundImage = 'url(https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=)';
+                        launcherIcon.style.backgroundSize = 'cover';
+                        launcherIcon.style.width = '48px';
+                        launcherIcon.style.height = '48px';
+                    }
+                }, 2000);
+                
             } catch (err) {
-                updateDebug('ERRORE: ' + err.message);
                 console.error("Errore Embedded Service Web v2:", err);
             }
         }
-
-        updateDebug('Script caricato, attesa bootstrap...');
     </script>
     
     <script 
