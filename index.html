@@ -27,12 +27,6 @@
             color: #333;
         }
         
-        /* NASCONDE IL PULSANTE ORIGINALE SALESFORCE */
-        .embeddedMessagingConversationButton {
-            display: none !important;
-            visibility: hidden !important;
-        }
-        
         /* PULSANTE PERSONALIZZATO */
         .custom-chat-button {
             position: fixed;
@@ -132,6 +126,9 @@
                 const detectedLang = setButtonText();
                 embeddedservice_bootstrap.settings.language = detectedLang;
                 
+                // IMPORTANTE: Nascondi il pulsante originale PRIMA di init()
+                embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
+                
                 embeddedservice_bootstrap.init(
                     '00DKB0000014aXF',
                     'Web_test',
@@ -141,27 +138,39 @@
                     }
                 );
                 
-                const checkInterval = setInterval(function() {
-                    if (window.embeddedservice_bootstrap && window.embeddedservice_bootstrap.utilAPI) {
-                        clearInterval(checkInterval);
-                        
-                        // Aggiungi evento click al pulsante personalizzato
-                        document.getElementById('customChatButton').addEventListener('click', function() {
-                            try {
-                                // Apre la chat usando l'API di Salesforce
-                                embeddedservice_bootstrap.utilAPI.launchChat();
-                            } catch (err) {
-                                console.error('Errore apertura chat:', err);
-                            }
-                        });
-                    }
-                }, 100);
+                console.log('Embedded Messaging inizializzato');
                 
             } catch (err) {
                 console.error('Error loading Embedded Messaging: ', err);
             }
         }
+        
+        // Aggiungi evento click al pulsante personalizzato
+        document.addEventListener('DOMContentLoaded', function() {
+            const customButton = document.getElementById('customChatButton');
+            
+            customButton.addEventListener('click', function() {
+                console.log('Click sul pulsante personalizzato');
+                try {
+                    if (window.embeddedservice_bootstrap && window.embeddedservice_bootstrap.utilAPI) {
+                        // Apre la chat usando l'API ufficiale
+                        embeddedservice_bootstrap.utilAPI.launchChat()
+                            .then(() => {
+                                console.log('Chat aperta con successo');
+                            })
+                            .catch((error) => {
+                                console.error('Errore apertura chat:', error);
+                            });
+                    } else {
+                        console.error('API non ancora disponibile');
+                    }
+                } catch (err) {
+                    console.error('Errore nel lancio della chat:', err);
+                }
+            });
+        });
     </script>
+    
     <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
