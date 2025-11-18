@@ -115,9 +115,15 @@
 
     <script type='text/javascript'>
         const CUSTOM_CHAT_BUTTON_ID = 'customChatButton';
+        const ESW_SCRIPT_URL = 'https://service.force.com/embeddedservice/5.0/esw.min.js';
         let isESWReady = false;
         let isChatLaunching = false;
         let pendingChatLaunch = false;
+        let sdkLoadStarted = false;
+        let resolveEswReady;
+        const eswReadyPromise = new Promise((resolve) => {
+            resolveEswReady = resolve;
+        });
 
         function getCustomButton() {
             return document.getElementById(CUSTOM_CHAT_BUTTON_ID);
@@ -168,6 +174,9 @@
                 return;
             }
             isESWReady = true;
+            if (typeof resolveEswReady === 'function') {
+                resolveEswReady();
+            }
             if (pendingChatLaunch) {
                 pendingChatLaunch = false;
                 startChatFlow();
@@ -195,8 +204,7 @@
 
         function startChatFlow() {
             if (!isESWReady) {
-                pendingChatLaunch = true;
-                console.warn('Embedded Service non ancora pronto, avvio ritardato');
+                queueChatLaunch();
                 return;
             }
 
@@ -218,25 +226,59 @@
         function launchChat() {
             console.log('Click sul pulsante personalizzato - V2');
             try {
-                const svc = window.embedded_svc;
-                if (!svc) {
-                    console.error('SDK Salesforce V2 non ancora caricato');
-                    pendingChatLaunch = true;
-                    return;
-                }
-
-                if (!isESWReady) {
-                    console.warn('SDK Salesforce V2 in inizializzazione, la chat si aprirà appena pronta');
-                    pendingChatLaunch = true;
-                    return;
-                }
-
-                startChatFlow();
+                queueChatLaunch();
             } catch (err) {
                 console.error('Errore nel lancio della chat V2:', err);
                 isChatLaunching = false;
                 showCustomButton();
             }
+        }
+
+        function queueChatLaunch() {
+            ensureSDKLoaded();
+
+            if (isESWReady) {
+                startChatFlow();
+                return;
+            }
+
+            if (!pendingChatLaunch) {
+                pendingChatLaunch = true;
+                eswReadyPromise.then(() => {
+                    pendingChatLaunch = false;
+                    startChatFlow();
+                });
+            }
+
+            console.warn('SDK Salesforce V2 in inizializzazione, la chat partirà automaticamente quando pronta');
+        }
+
+        function ensureSDKLoaded() {
+            if (sdkLoadStarted) {
+                return;
+            }
+
+            if (window.embedded_svc) {
+                sdkLoadStarted = true;
+                initESW('https://service.force.com');
+                return;
+            }
+
+            sdkLoadStarted = true;
+            var s = document.createElement('script');
+            s.setAttribute('src', ESW_SCRIPT_URL);
+            s.setAttribute('async', 'true');
+            s.setAttribute('defer', 'true');
+            s.onload = function() {
+                initESW(null);
+            };
+            s.onerror = function(event) {
+                console.error('Impossibile caricare lo script Embedded Service V2', event);
+                sdkLoadStarted = false;
+                isChatLaunching = false;
+                showCustomButton();
+            };
+            document.body.appendChild(s);
         }
 
         function registerChatEvents() {
@@ -299,16 +341,7 @@
             markESWReady();
         };
         
-        if (!window.embedded_svc) {
-            var s = document.createElement('script');
-            s.setAttribute('src', 'https://pianidibobbio.my.salesforce.com/embeddedservice/2.0/esw.min.js');
-            s.onload = function() {
-                initESW(null);
-            };
-            document.body.appendChild(s);
-        } else {
-            initESW('https://service.force.com');
-        }
+        ensureSDKLoaded();
     </script>
 </body>
 </html>
