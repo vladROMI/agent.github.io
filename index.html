@@ -61,6 +61,9 @@
             visibility: visible !important;
             opacity: 1 !important;
         }
+        .custom-chat-button--hidden {
+            display: none !important;
+        }
         
         .custom-chat-button:hover {
             background-color: #003d6b;
@@ -102,7 +105,7 @@
     
     <!-- PULSANTE PERSONALIZZATO -->
     <div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-        <div class="custom-chat-button" onclick="launchChat()">
+        <div class="custom-chat-button" id="customChatButton" onclick="launchChat()">
             <div class="custom-chat-button-icon">
                 <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
             </div>
@@ -111,6 +114,28 @@
     </div>
 
     <script type='text/javascript'>
+        const CUSTOM_CHAT_BUTTON_ID = 'customChatButton';
+        let isESWReady = false;
+        let isChatLaunching = false;
+
+        function getCustomButton() {
+            return document.getElementById(CUSTOM_CHAT_BUTTON_ID);
+        }
+
+        function hideCustomButton() {
+            const button = getCustomButton();
+            if (button) {
+                button.classList.add('custom-chat-button--hidden');
+            }
+        }
+
+        function showCustomButton() {
+            const button = getCustomButton();
+            if (button) {
+                button.classList.remove('custom-chat-button--hidden');
+            }
+        }
+        
         // Rileva la lingua dall'URL
         function detectLanguage() {
             const path = window.location.pathname.toLowerCase();
@@ -141,27 +166,54 @@
         function launchChat() {
             console.log('Click sul pulsante personalizzato - V2');
             try {
-                // Per Embedded Service V2, usa embedded_svc invece di embeddedservice_bootstrap
-                if (window.embedded_svc && window.embedded_svc.liveAgentAPI) {
-                    // V2 usa liveAgentAPI.startChat()
-                    embedded_svc.liveAgentAPI.startChat()
-                        .then(() => {
-                            console.log('Chat V2 aperta con successo');
-                        })
-                        .catch((error) => {
-                            console.error('Errore apertura chat V2:', error);
-                        });
-                } else {
+                const svc = window.embedded_svc;
+                if (!svc || !isESWReady) {
                     console.error('API Salesforce V2 non ancora disponibile');
-                    // Fallback: prova a cliccare il pulsante originale se presente
-                    const originalButton = document.querySelector('.helpButtonEnabled');
-                    if (originalButton) {
-                        originalButton.click();
-                    }
+                    return;
+                }
+
+                if (isChatLaunching) {
+                    return;
+                }
+
+                isChatLaunching = true;
+                hideCustomButton();
+
+                if (svc.liveAgentAPI && typeof svc.liveAgentAPI.startChat === 'function') {
+                    svc.liveAgentAPI.startChat();
+                } else {
+                    // Fallback: apre il widget standard se l'API non è disponibile
+                    svc.openEmbeddedService();
                 }
             } catch (err) {
                 console.error('Errore nel lancio della chat V2:', err);
+                isChatLaunching = false;
+                showCustomButton();
             }
+        }
+
+        function registerChatEvents() {
+            if (!window.embedded_svc) {
+                return;
+            }
+
+            embedded_svc.addEventHandler('afterInit', function() {
+                isESWReady = true;
+            });
+
+            embedded_svc.addEventHandler('afterMaximize', function() {
+                hideCustomButton();
+            });
+
+            embedded_svc.addEventHandler('afterMinimize', function() {
+                isChatLaunching = false;
+                showCustomButton();
+            });
+
+            embedded_svc.addEventHandler('afterDestroy', function() {
+                isChatLaunching = false;
+                showCustomButton();
+            });
         }
         
         // Inizializzazione Embedded Service V2
@@ -177,6 +229,8 @@
             
             embedded_svc.settings.enabledFeatures = ['LiveAgent'];
             embedded_svc.settings.entryFeature = 'LiveAgent';
+
+            registerChatEvents();
             
             embedded_svc.init(
                 'https://pianidibobbio.my.salesforce.com',
@@ -197,7 +251,7 @@
         
         if (!window.embedded_svc) {
             var s = document.createElement('script');
-            s.setAttribute('src', 'https://pianidibobbio.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+            s.setAttribute('src', 'https://pianidibobbio.my.salesforce.com/embeddedservice/2.0/esw.min.js');
             s.onload = function() {
                 initESW(null);
             };
