@@ -16,116 +16,152 @@
             background-color: #f5f5f5;
             text-align: center;
         }
-
         .logo {
             max-width: 250px;
             height: auto;
             margin-bottom: 20px;
         }
-
         .title {
             font-size: 22px;
             font-weight: bold;
             color: #333;
+        }
+        
+        /* NASCONDE IL PULSANTE ORIGINALE SALESFORCE */
+        .embeddedMessagingConversationButton {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* PULSANTE PERSONALIZZATO */
+        .custom-chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #005290;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px 12px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 82, 144, 0.3);
+            transition: all 0.3s ease;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+        }
+        
+        .custom-chat-button:hover {
+            background-color: #003d6b;
+            box-shadow: 0 6px 16px rgba(0, 82, 144, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .custom-chat-button:active {
+            transform: translateY(0);
+        }
+        
+        .custom-chat-button-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .custom-chat-button-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .custom-chat-button-text {
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
     <!-- Logo -->
     <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
-
     <!-- Testo -->
     <div class="title">TEST Agentforce</div>
-
-
-	
-   <style type='text/css'>
-    /* Nasconde il testo predefinito del pulsante */
-    .embeddedMessagingConversationButton .message {
-        display: none !important;
-    }
     
-    /* Aggiunge il testo personalizzato "Serve aiuto?" */
-    .embeddedMessagingConversationButton .embeddedMessagingIconContainer::after {
-        content: "Serve aiuto?";
-        position: absolute;
-        right: 60px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #fff;
-        font-size: 14px;
-        font-family: Arial, sans-serif;
-        font-weight: 500;
-        white-space: nowrap;
-        pointer-events: none;
-    }
-    
-    /* Personalizza il container del pulsante */
-    .embeddedMessagingConversationButton {
-        background-color: #005290 !important;
-        border-radius: 50px !important;
-        padding-right: 20px !important;
-        min-width: 180px !important;
-    }
-    
-    /* Personalizza l'icona con l'immagine */
-    .embeddedMessagingIconContainer .embeddedMessagingIcon {
-        background-image: url('https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=') !important;
-        background-size: cover !important;
-        background-position: center !important;
-    }
-    
-    /* Nasconde l'icona SVG predefinita */
-    .embeddedMessagingIconContainer .embeddedMessagingIcon svg {
-        display: none !important;
-    }
-    
-    /* Colore di sfondo icona */
-    .embeddedMessagingIconContainer {
-        background-color: #005290 !important;
-    }
-</style>
+    <!-- PULSANTE PERSONALIZZATO -->
+    <button id="customChatButton" class="custom-chat-button">
+        <div class="custom-chat-button-icon">
+            <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
+        </div>
+        <span class="custom-chat-button-text" id="chatButtonText">Serve aiuto?</span>
+    </button>
 
-<script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'it';
-			
-			embeddedservice_bootstrap.init(
-				'00DKB0000014aXF',
-				'Web_test',
-				'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
-				{
-					scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
-				}
-			);
-			
-			// Monitora quando il componente è caricato e applica le personalizzazioni
-			const observer = new MutationObserver(function(mutations) {
-				const button = document.querySelector('.embeddedMessagingConversationButton');
-				if (button) {
-					// Forza la modifica del testo tramite JavaScript come fallback
-					const messageEl = button.querySelector('.message');
-					if (messageEl) {
-						messageEl.textContent = 'Serve aiuto?';
-					}
-					observer.disconnect();
-				}
-			});
-			
-			observer.observe(document.body, {
-				childList: true,
-				subtree: true
-			});
-			
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
-</script>
-<script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-
-
-
+    <script type='text/javascript'>
+        // Rileva la lingua dall'URL
+        function detectLanguage() {
+            const path = window.location.pathname.toLowerCase();
+            if (path.includes('/en/')) {
+                return 'en';
+            }
+            // Default è italiano
+            return 'it';
+        }
+        
+        // Imposta il testo del pulsante in base alla lingua
+        function setButtonText() {
+            const lang = detectLanguage();
+            const buttonText = document.getElementById('chatButtonText');
+            
+            if (lang === 'en') {
+                buttonText.textContent = 'Need help?';
+            } else {
+                buttonText.textContent = 'Serve aiuto?';
+            }
+            
+            return lang;
+        }
+        
+        function initEmbeddedMessaging() {
+            try {
+                // Imposta la lingua rilevata
+                const detectedLang = setButtonText();
+                embeddedservice_bootstrap.settings.language = detectedLang;
+                
+                embeddedservice_bootstrap.init(
+                    '00DKB0000014aXF',
+                    'Web_test',
+                    'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
+                    {
+                        scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
+                    }
+                );
+                
+                const checkInterval = setInterval(function() {
+                    if (window.embeddedservice_bootstrap && window.embeddedservice_bootstrap.utilAPI) {
+                        clearInterval(checkInterval);
+                        
+                        // Aggiungi evento click al pulsante personalizzato
+                        document.getElementById('customChatButton').addEventListener('click', function() {
+                            try {
+                                // Apre la chat usando l'API di Salesforce
+                                embeddedservice_bootstrap.utilAPI.launchChat();
+                            } catch (err) {
+                                console.error('Errore apertura chat:', err);
+                            }
+                        });
+                    }
+                }, 100);
+                
+            } catch (err) {
+                console.error('Error loading Embedded Messaging: ', err);
+            }
+        }
+    </script>
+    <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
