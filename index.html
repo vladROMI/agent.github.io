@@ -27,6 +27,17 @@
             color: #333;
         }
         
+        /* NASCONDE FORZATAMENTE IL PULSANTE ORIGINALE SALESFORCE */
+        .embeddedMessagingFrame,
+        .embeddedMessagingConversationButton,
+        [class*="embeddedMessaging"] button,
+        [class*="embedded-messaging"] button {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        
         /* PULSANTE PERSONALIZZATO */
         .custom-chat-button {
             position: fixed;
@@ -37,7 +48,7 @@
             border: none;
             border-radius: 50px;
             padding: 12px 24px 12px 12px;
-            display: flex;
+            display: flex !important;
             align-items: center;
             gap: 12px;
             cursor: pointer;
@@ -47,6 +58,8 @@
             font-size: 14px;
             font-weight: 500;
             z-index: 9999;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         
         .custom-chat-button:hover {
@@ -88,12 +101,14 @@
     <div class="title">TEST Agentforce</div>
     
     <!-- PULSANTE PERSONALIZZATO -->
-    <button id="customChatButton" class="custom-chat-button">
-        <div class="custom-chat-button-icon">
-            <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <div class="custom-chat-button" onclick="launchChat()">
+            <div class="custom-chat-button-icon">
+                <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
+            </div>
+            <span class="custom-chat-button-text" id="chatButtonText">Serve aiuto?</span>
         </div>
-        <span class="custom-chat-button-text" id="chatButtonText">Serve aiuto?</span>
-    </button>
+    </div>
 
     <script type='text/javascript'>
         // Rileva la lingua dall'URL
@@ -111,13 +126,38 @@
             const lang = detectLanguage();
             const buttonText = document.getElementById('chatButtonText');
             
-            if (lang === 'en') {
-                buttonText.textContent = 'Need help?';
-            } else {
-                buttonText.textContent = 'Serve aiuto?';
+            if (buttonText) {
+                if (lang === 'en') {
+                    buttonText.textContent = 'Need help?';
+                } else {
+                    buttonText.textContent = 'Serve aiuto?';
+                }
             }
             
             return lang;
+        }
+        
+        // Funzione globale per aprire la chat
+        function launchChat() {
+            console.log('Click sul pulsante personalizzato');
+            try {
+                if (window.embeddedservice_bootstrap && window.embeddedservice_bootstrap.utilAPI) {
+                    embeddedservice_bootstrap.utilAPI.launchChat()
+                        .then(() => {
+                            console.log('Chat aperta con successo');
+                        })
+                        .catch((error) => {
+                            console.error('Errore apertura chat:', error);
+                        })
+                        .finally(() => {
+                            console.log('Processo apertura chat completato');
+                        });
+                } else {
+                    console.error('API Salesforce non ancora disponibile');
+                }
+            } catch (err) {
+                console.error('Errore nel lancio della chat:', err);
+            }
         }
         
         function initEmbeddedMessaging() {
@@ -126,7 +166,7 @@
                 const detectedLang = setButtonText();
                 embeddedservice_bootstrap.settings.language = detectedLang;
                 
-                // IMPORTANTE: Nascondi il pulsante originale PRIMA di init()
+                // CRITICO: Nascondi il pulsante originale PRIMA di init()
                 embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
                 
                 embeddedservice_bootstrap.init(
@@ -138,39 +178,14 @@
                     }
                 );
                 
-                console.log('Embedded Messaging inizializzato');
+                console.log('Embedded Messaging inizializzato con hideChatButtonOnLoad = true');
                 
             } catch (err) {
                 console.error('Error loading Embedded Messaging: ', err);
             }
         }
-        
-        // Aggiungi evento click al pulsante personalizzato
-        document.addEventListener('DOMContentLoaded', function() {
-            const customButton = document.getElementById('customChatButton');
-            
-            customButton.addEventListener('click', function() {
-                console.log('Click sul pulsante personalizzato');
-                try {
-                    if (window.embeddedservice_bootstrap && window.embeddedservice_bootstrap.utilAPI) {
-                        // Apre la chat usando l'API ufficiale
-                        embeddedservice_bootstrap.utilAPI.launchChat()
-                            .then(() => {
-                                console.log('Chat aperta con successo');
-                            })
-                            .catch((error) => {
-                                console.error('Errore apertura chat:', error);
-                            });
-                    } else {
-                        console.error('API non ancora disponibile');
-                    }
-                } catch (err) {
-                    console.error('Errore nel lancio della chat:', err);
-                }
-            });
-        });
     </script>
     
-    <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+    <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWwebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
