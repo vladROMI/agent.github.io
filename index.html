@@ -137,55 +137,74 @@
             return lang;
         }
         
-        // Funzione globale per aprire la chat
+        // Funzione globale per aprire la chat (V2 API)
         function launchChat() {
-            console.log('Click sul pulsante personalizzato');
+            console.log('Click sul pulsante personalizzato - V2');
             try {
-                if (window.embeddedservice_bootstrap && window.embeddedservice_bootstrap.utilAPI) {
-                    embeddedservice_bootstrap.utilAPI.launchChat()
+                // Per Embedded Service V2, usa embedded_svc invece di embeddedservice_bootstrap
+                if (window.embedded_svc && window.embedded_svc.liveAgentAPI) {
+                    // V2 usa liveAgentAPI.startChat()
+                    embedded_svc.liveAgentAPI.startChat()
                         .then(() => {
-                            console.log('Chat aperta con successo');
+                            console.log('Chat V2 aperta con successo');
                         })
                         .catch((error) => {
-                            console.error('Errore apertura chat:', error);
-                        })
-                        .finally(() => {
-                            console.log('Processo apertura chat completato');
+                            console.error('Errore apertura chat V2:', error);
                         });
                 } else {
-                    console.error('API Salesforce non ancora disponibile');
+                    console.error('API Salesforce V2 non ancora disponibile');
+                    // Fallback: prova a cliccare il pulsante originale se presente
+                    const originalButton = document.querySelector('.helpButtonEnabled');
+                    if (originalButton) {
+                        originalButton.click();
+                    }
                 }
             } catch (err) {
-                console.error('Errore nel lancio della chat:', err);
+                console.error('Errore nel lancio della chat V2:', err);
             }
         }
         
-        function initEmbeddedMessaging() {
-            try {
-                // Imposta la lingua rilevata
-                const detectedLang = setButtonText();
-                embeddedservice_bootstrap.settings.language = detectedLang;
-                
-                // CRITICO: Nascondi il pulsante originale PRIMA di init()
-                embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
-                
-                embeddedservice_bootstrap.init(
-                    '00DKB0000014aXF',
-                    'Web_test',
-                    'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
-                    {
-                        scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
-                    }
-                );
-                
-                console.log('Embedded Messaging inizializzato con hideChatButtonOnLoad = true');
-                
-            } catch (err) {
-                console.error('Error loading Embedded Messaging: ', err);
-            }
+        // Inizializzazione Embedded Service V2
+        var initESW = function(gslbBaseURL) {
+            embedded_svc.settings.displayHelpButton = false; // NASCONDE il pulsante originale
+            embedded_svc.settings.language = detectLanguage(); // Imposta la lingua
+            
+            // Imposta il testo del pulsante custom
+            setButtonText();
+            
+            embedded_svc.settings.defaultMinimizedText = 'Chat'; 
+            embedded_svc.settings.disabledMinimizedText = 'Offline';
+            
+            embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+            embedded_svc.settings.entryFeature = 'LiveAgent';
+            
+            embedded_svc.init(
+                'https://pianidibobbio.my.salesforce.com',
+                'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
+                gslbBaseURL,
+                '00DKB0000014aXF',
+                'Web_test',
+                {
+                    baseLiveAgentContentURL: 'https://c.la2-c1-cdg.salesforceliveagent.com/content',
+                    deploymentId: '572KB0000004Cln',
+                    buttonId: '573KB0000004Cm1',
+                    baseLiveAgentURL: 'https://d.la2-c1-cdg.salesforceliveagent.com/chat',
+                    eswLiveAgentDevName: 'Web_test',
+                    isOfflineSupportEnabled: false
+                }
+            );
+        };
+        
+        if (!window.embedded_svc) {
+            var s = document.createElement('script');
+            s.setAttribute('src', 'https://pianidibobbio.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+            s.onload = function() {
+                initESW(null);
+            };
+            document.body.appendChild(s);
+        } else {
+            initESW('https://service.force.com');
         }
     </script>
-    
-    <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWwebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
