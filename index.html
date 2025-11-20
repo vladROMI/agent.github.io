@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agentforce Custom Button - Corretto</title>
+    <title>Agentforce Custom Button - Soluzione Finale</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,7 +68,7 @@
         }
 
         /* --- 2. NASCONDI IL PULSANTE STANDARD DI SALESFORCE (Fix Sovrapposizione) --- */
-        /* Rendiamo invisibili i contenitori standard del pulsante di lancio MIAW */
+        /* Nasconde aggressivamente tutti i contenitori del pulsante di lancio MIAW */
         .embeddedMessagingConversationButtonWrapper,
         .embeddedMessagingFrame,
         iframe[title*="Chat Button"], 
@@ -77,7 +77,6 @@
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none !important;
-            /* Mosse aggressive per nascondere il componente MIAW */
             width: 0 !important;
             height: 0 !important;
             position: absolute !important;
@@ -114,7 +113,7 @@
 
         // --- GESTIONE EVENTI E LANCIAMENTO ---
 
-        // 1. Funzione per Lanciare la Chat (Corretta per il problema 'observe')
+        // Funzione per Lanciare la Chat (Corretta per il problema 'observe')
         function launchCustomChat() {
             console.log("Apertura chat richiesta...");
             
@@ -138,8 +137,7 @@
                     if (customButton) {
                         customButton.style.display = 'flex';
                     }
-                    // Aggiungiamo un feedback visivo
-                    alert("Impossibile avviare la chat. Si prega di riprovare.");
+                    alert("Impossibile avviare la chat. Riprovare. (Verificare console per dettagli)");
                 });
             } else {
                 console.warn("embeddedservice_bootstrap.utilAPI non ancora disponibile.");
@@ -151,14 +149,17 @@
         }
 
 
-        // 2. Inizializzazione Salesforce MIAW
+        // Inizializzazione Salesforce MIAW
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = detectLanguage();
-                // Aggiungiamo un'impostazione che a volte aiuta a risolvere i conflitti DOM
-                // Questa è un'impostazione non ufficiale ma spesso usata per debugging/compatibilità.
+                
+                /* 🚨 CORREZIONE CRITICA PER IL MutationObserver: */
+                // Forza l'uso di una modalità di rendering più stabile e meno moderna
+                // per prevenire conflitti con Web Components/Shadow DOM/React.
+                embeddedservice_bootstrap.settings.enableWebComponents = false; 
                 embeddedservice_bootstrap.settings.enableReact = false; 
-
+                
                 embeddedservice_bootstrap.init(
                     '00DKB0000014aXF',
                     'Web_test',
@@ -183,7 +184,7 @@
                         console.warn("Timeout ready: forzo la visualizzazione del pulsante.");
                         btn.style.display = 'flex';
                     }
-                }, 4000); // 4 secondi di attesa
+                }, 4000); 
 
                 // Ri-mostra il pulsante custom quando la chat viene minimizzata
                 window.addEventListener("onEmbeddedMessagingWindowMinimized", () => {
@@ -193,7 +194,6 @@
                 
             } catch (err) {
                 console.error('Error loading Embedded Messaging: ', err);
-                // In caso di errore, mostriamo il pulsante come fallback
                 document.getElementById('customChatButton').style.display = 'flex';
             }
         };
