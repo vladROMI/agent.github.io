@@ -2,79 +2,47 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Preview Agentforce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentforce MIAW Preview</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
-        .logo {
-            max-width: 250px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-        .title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        /* NASCONDE FORZATAMENTE IL PULSANTE ORIGINALE SALESFORCE */
-        .embeddedMessagingFrame,
-        .embeddedMessagingConversationButton,
-        [class*="embeddedMessaging"] button,
-        [class*="embedded-messaging"] button {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-        
-        /* PULSANTE PERSONALIZZATO */
+
+        /* --- STILE PULSANTE PERSONALIZZATO --- */
         .custom-chat-button {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: #005290;
+            background-color: #005290; /* Tuo colore aziendale */
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 12px 24px 12px 12px;
-            display: flex !important;
+            padding: 8px 20px 8px 8px;
+            display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 82, 144, 0.3);
             transition: all 0.3s ease;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
             z-index: 9999;
-            visibility: visible !important;
-            opacity: 1 !important;
         }
-        .custom-chat-button--hidden {
-            display: none !important;
-        }
-        
+
         .custom-chat-button:hover {
             background-color: #003d6b;
-            box-shadow: 0 6px 16px rgba(0, 82, 144, 0.4);
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 82, 144, 0.4);
         }
-        
-        .custom-chat-button:active {
-            transform: translateY(0);
-        }
-        
+
         .custom-chat-button-icon {
             width: 40px;
             height: 40px;
@@ -85,263 +53,99 @@
             justify-content: center;
             overflow: hidden;
         }
-        
+
         .custom-chat-button-icon img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
-        .custom-chat-button-text {
-            white-space: nowrap;
+
+        /* --- NASCONDI IL PULSANTE STANDARD DI SALESFORCE --- */
+        /* Questo tenta di nascondere il pulsante nativo rotondo che Salesforce inietta */
+        .embeddedMessagingConversationButtonWrapper,
+        [class*='embeddedMessagingConversationButton'],
+        iframe[title="Chat Button"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
         }
+
     </style>
 </head>
 <body>
-    <!-- Logo -->
-    <img src="bobbio_logo.png" alt="Logo Azienda" class="logo">
-    <!-- Testo -->
-    <div class="title">TEST Agentforce</div>
-    
-    <!-- PULSANTE PERSONALIZZATO -->
-    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-        <div class="custom-chat-button" id="customChatButton" onclick="launchChat()">
-            <div class="custom-chat-button-icon">
-                <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
-            </div>
-            <span class="custom-chat-button-text" id="chatButtonText">Serve aiuto?</span>
+
+    <img src="bobbio_logo.png" alt="Logo" style="max-width: 200px; margin-bottom: 20px;" onerror="this.style.display='none'">
+    <h2>Test Agentforce (MIAW)</h2>
+
+    <button id="customChatButton" class="custom-chat-button" onclick="launchCustomChat()">
+        <div class="custom-chat-button-icon">
+            <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
         </div>
-    </div>
+        <span id="chatButtonText">Caricamento...</span>
+    </button>
 
     <script type='text/javascript'>
-        const CUSTOM_CHAT_BUTTON_ID = 'customChatButton';
-        const ESW_SCRIPT_URL = 'https://service.force.com/embeddedservice/5.0/esw.min.js';
-        let isESWReady = false;
-        let isChatLaunching = false;
-        let pendingChatLaunch = false;
-        let sdkLoadStarted = false;
-        let resolveEswReady;
-        const eswReadyPromise = new Promise((resolve) => {
-            resolveEswReady = resolve;
-        });
-
-        function getCustomButton() {
-            return document.getElementById(CUSTOM_CHAT_BUTTON_ID);
-        }
-
-        function hideCustomButton() {
-            const button = getCustomButton();
-            if (button) {
-                button.classList.add('custom-chat-button--hidden');
-            }
-        }
-
-        function showCustomButton() {
-            const button = getCustomButton();
-            if (button) {
-                button.classList.remove('custom-chat-button--hidden');
-            }
-        }
-        
-        // Rileva la lingua dall'URL
+        // 1. Rilevamento Lingua
         function detectLanguage() {
-            const path = window.location.pathname.toLowerCase();
-            if (path.includes('/en/')) {
-                return 'en';
+            const url = window.location.href;
+            if (url.indexOf('/en/') > -1) {
+                return 'en_US'; // Salesforce preferisce en_US
             }
-            // Default è italiano
-            return 'it';
-        }
-        
-        // Imposta il testo del pulsante in base alla lingua
-        function setButtonText() {
-            const lang = detectLanguage();
-            const buttonText = document.getElementById('chatButtonText');
-            
-            if (buttonText) {
-                if (lang === 'en') {
-                    buttonText.textContent = 'Need help?';
-                } else {
-                    buttonText.textContent = 'Serve aiuto?';
-                }
-            }
-            
-            return lang;
+            return 'it'; // Default
         }
 
-        function markESWReady() {
-            if (isESWReady) {
-                return;
-            }
-            isESWReady = true;
-            if (typeof resolveEswReady === 'function') {
-                resolveEswReady();
-            }
-            if (pendingChatLaunch) {
-                pendingChatLaunch = false;
-                startChatFlow();
-            }
+        const currentLang = detectLanguage();
+
+        // 2. Imposta Testo Pulsante Immediatamente
+        const btnText = document.getElementById('chatButtonText');
+        if (currentLang === 'en_US') {
+            btnText.innerText = "Need help?";
+        } else {
+            btnText.innerText = "Serve aiuto?";
         }
 
-        function openChatWidget() {
-            const svc = window.embedded_svc;
-            if (!svc) {
-                return false;
-            }
-
-            if (svc.liveAgentAPI && typeof svc.liveAgentAPI.startChat === 'function') {
-                svc.liveAgentAPI.startChat();
-                return true;
-            }
-
-            if (typeof svc.openEmbeddedService === 'function') {
-                svc.openEmbeddedService();
-                return true;
-            }
-
-            return false;
-        }
-
-        function startChatFlow() {
-            if (!isESWReady) {
-                queueChatLaunch();
-                return;
-            }
-
-            if (isChatLaunching) {
-                return;
-            }
-
-            isChatLaunching = true;
-            hideCustomButton();
-
-            if (!openChatWidget()) {
-                console.error('Impossibile aprire la chat V2: API non disponibili');
-                isChatLaunching = false;
-                showCustomButton();
-            }
-        }
-        
-        // Funzione globale per aprire la chat (V2 API)
-        function launchChat() {
-            console.log('Click sul pulsante personalizzato - V2');
+        // 3. Funzione di Inizializzazione Salesforce (MODIFICATA per usare currentLang)
+        function initEmbeddedMessaging() {
             try {
-                queueChatLaunch();
+                // Impostiamo la lingua dinamicamente
+                embeddedservice_bootstrap.settings.language = currentLang; 
+
+                embeddedservice_bootstrap.init(
+                    '00DKB0000014aXF',
+                    'Web_test',
+                    'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
+                    {
+                        scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
+                    }
+                );
             } catch (err) {
-                console.error('Errore nel lancio della chat V2:', err);
-                isChatLaunching = false;
-                showCustomButton();
+                console.error('Error loading Embedded Messaging: ', err);
             }
-        }
-
-        function queueChatLaunch() {
-            ensureSDKLoaded();
-
-            if (isESWReady) {
-                startChatFlow();
-                return;
-            }
-
-            if (!pendingChatLaunch) {
-                pendingChatLaunch = true;
-                eswReadyPromise.then(() => {
-                    pendingChatLaunch = false;
-                    startChatFlow();
-                });
-            }
-
-            console.warn('SDK Salesforce V2 in inizializzazione, la chat partirà automaticamente quando pronta');
-        }
-
-        function ensureSDKLoaded() {
-            if (sdkLoadStarted) {
-                return;
-            }
-
-            if (window.embedded_svc) {
-                sdkLoadStarted = true;
-                initESW('https://service.force.com');
-                return;
-            }
-
-            sdkLoadStarted = true;
-            var s = document.createElement('script');
-            s.setAttribute('src', ESW_SCRIPT_URL);
-            s.setAttribute('async', 'true');
-            s.setAttribute('defer', 'true');
-            s.onload = function() {
-                initESW(null);
-            };
-            s.onerror = function(event) {
-                console.error('Impossibile caricare lo script Embedded Service V2', event);
-                sdkLoadStarted = false;
-                isChatLaunching = false;
-                showCustomButton();
-            };
-            document.body.appendChild(s);
-        }
-
-        function registerChatEvents() {
-            if (!window.embedded_svc) {
-                return;
-            }
-
-            embedded_svc.addEventHandler('afterInit', function() {
-                markESWReady();
-            });
-
-            embedded_svc.addEventHandler('afterMaximize', function() {
-                hideCustomButton();
-            });
-
-            embedded_svc.addEventHandler('afterMinimize', function() {
-                isChatLaunching = false;
-                showCustomButton();
-            });
-
-            embedded_svc.addEventHandler('afterDestroy', function() {
-                isChatLaunching = false;
-                showCustomButton();
-            });
-        }
-        
-        // Inizializzazione Embedded Service V2
-        var initESW = function(gslbBaseURL) {
-            embedded_svc.settings.displayHelpButton = false; // NASCONDE il pulsante originale
-            embedded_svc.settings.language = detectLanguage(); // Imposta la lingua
-            
-            // Imposta il testo del pulsante custom
-            setButtonText();
-            
-            embedded_svc.settings.defaultMinimizedText = 'Chat'; 
-            embedded_svc.settings.disabledMinimizedText = 'Offline';
-            
-            embedded_svc.settings.enabledFeatures = ['LiveAgent'];
-            embedded_svc.settings.entryFeature = 'LiveAgent';
-
-            registerChatEvents();
-            
-            embedded_svc.init(
-                'https://pianidibobbio.my.salesforce.com',
-                'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
-                gslbBaseURL,
-                '00DKB0000014aXF',
-                'Web_test',
-                {
-                    baseLiveAgentContentURL: 'https://c.la2-c1-cdg.salesforceliveagent.com/content',
-                    deploymentId: '572KB0000004Cln',
-                    buttonId: '573KB0000004Cm1',
-                    baseLiveAgentURL: 'https://d.la2-c1-cdg.salesforceliveagent.com/chat',
-                    eswLiveAgentDevName: 'Web_test',
-                    isOfflineSupportEnabled: false
-                }
-            );
-
-            // Flag come pronto anche se l'evento non arriva
-            markESWReady();
         };
-        
-        ensureSDKLoaded();
+
+        // 4. Funzione per Lanciare la Chat dal Pulsante Custom
+        function launchCustomChat() {
+            console.log("Tentativo avvio chat...");
+            try {
+                // Nuova API per MIAW (Bootstrap)
+                embeddedservice_bootstrap.utilAPI.launchChat()
+                    .then(() => {
+                        console.log("Chat avviata con successo");
+                    })
+                    .catch((e) => {
+                        console.error("Errore avvio chat:", e);
+                        // Fallback se l'utente clicca prima che sia pronto
+                        alert("La chat si sta caricando, riprova tra un istante.");
+                    });
+            } catch (e) {
+                console.error("API non pronta:", e);
+                alert("Attendere il caricamento della chat...");
+            }
+        }
     </script>
+
+    <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
 </body>
 </html>
