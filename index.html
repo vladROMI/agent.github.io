@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agentforce Custom Button</title>
+    <title>Agentforce Custom Button - Corretto</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,20 +21,21 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: #3b5998; /* Colore blu del tuo esempio */
+            background-color: #3b5998;
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 0; /* Reset padding */
-            display: none; /* NASCOSTO DI DEFAULT - Apparirà solo a caricamento finito */
+            padding: 0; 
+            /* Importante: Nascosto di default, appare solo a caricamento Salesforce avvenuto */
+            display: none; 
             align-items: center;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
-            z-index: 9999; /* Deve stare sopra a tutto */
+            z-index: 9999; 
             overflow: hidden;
             height: 50px;
-            padding-right: 20px; /* Spazio per il testo a destra */
+            padding-right: 20px;
         }
 
         .custom-chat-button:hover {
@@ -42,7 +43,6 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
         }
 
-        /* Cerchio bianco per l'icona */
         .custom-chat-button-icon {
             width: 46px;
             height: 46px;
@@ -51,7 +51,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 2px; /* Piccolo margine dal bordo blu */
+            margin: 2px;
         }
 
         .custom-chat-button-icon img {
@@ -67,11 +67,8 @@
             font-family: sans-serif;
         }
 
-        /* --- 2. NASCONDERE IL PULSANTE STANDARD (QUELLO NERO) --- */
-        /* Questo è il trucco. Salesforce mette il pulsante dentro un div con classe 
-           embeddedMessagingConversationButtonWrapper o dentro un iframe specifico.
-           Li nascondiamo tutti forzatamente.
-        */
+        /* --- 2. NASCONDI IL PULSANTE STANDARD DI SALESFORCE (Fix Sovrapposizione) --- */
+        /* Rendiamo invisibili i contenitori standard del pulsante di lancio MIAW */
         .embeddedMessagingConversationButtonWrapper,
         .embeddedMessagingFrame,
         iframe[title*="Chat Button"], 
@@ -80,6 +77,7 @@
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none !important;
+            /* Mosse aggressive per nascondere il componente MIAW */
             width: 0 !important;
             height: 0 !important;
             position: absolute !important;
@@ -90,18 +88,16 @@
 </head>
 <body>
 
-    <img src="bobbio_logo.png" alt="Logo" style="max-width: 200px;" onerror="this.style.display='none'">
-
     <div id="customChatButton" class="custom-chat-button" onclick="launchCustomChat()">
         <div class="custom-chat-button-icon">
             <img src="https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=" alt="Chat">
         </div>
-        <span class="custom-chat-button-text" id="chatButtonText">Serve aiuto?</span>
+        <span class="custom-chat-button-text" id="chatButtonText">Caricamento...</span>
     </div>
 
     <script type='text/javascript'>
         
-        // 1. Configurazione Lingua e Testi
+        // --- LOGICA DI BASE ---
         function detectLanguage() {
             return window.location.href.indexOf('/en/') > -1 ? 'en_US' : 'it';
         }
@@ -109,21 +105,59 @@
         function updateButtonText() {
             const lang = detectLanguage();
             const btnText = document.getElementById('chatButtonText');
-            if(lang === 'en_US') {
-                btnText.textContent = "Need help?";
-            } else {
-                btnText.textContent = "Serve aiuto?";
+            if(btnText) {
+                btnText.textContent = (lang === 'en_US') ? "Need help?" : "Serve aiuto?";
             }
         }
         
-        // Eseguiamo subito l'aggiornamento testo
         updateButtonText();
+
+        // --- GESTIONE EVENTI E LANCIAMENTO ---
+
+        // 1. Funzione per Lanciare la Chat (Corretta per il problema 'observe')
+        function launchCustomChat() {
+            console.log("Apertura chat richiesta...");
+            
+            const customButton = document.getElementById('customChatButton');
+            
+            // NASCONDI IL PULSANTE CUSTOM immediatamente al click
+            if (customButton) {
+                customButton.style.display = 'none';
+            }
+
+            // LANCIA LA CHAT SALESFORCE con gestione errore robusta
+            if (window.embeddedservice_bootstrap && embeddedservice_bootstrap.utilAPI) {
+                embeddedservice_bootstrap.utilAPI.launchChat()
+                .then(() => {
+                    console.log("Chat lanciata con successo.");
+                })
+                .catch(err => {
+                    console.error("Errore di avvio API MIAW (Problema MutationObserver):", err);
+                    
+                    // Se fallisce, rimostra il pulsante custom per tentare di nuovo
+                    if (customButton) {
+                        customButton.style.display = 'flex';
+                    }
+                    // Aggiungiamo un feedback visivo
+                    alert("Impossibile avviare la chat. Si prega di riprovare.");
+                });
+            } else {
+                console.warn("embeddedservice_bootstrap.utilAPI non ancora disponibile.");
+                // Se non è disponibile, lo rimostriamo subito
+                if (customButton) {
+                    customButton.style.display = 'flex';
+                }
+            }
+        }
 
 
         // 2. Inizializzazione Salesforce MIAW
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = detectLanguage();
+                // Aggiungiamo un'impostazione che a volte aiuta a risolvere i conflitti DOM
+                // Questa è un'impostazione non ufficiale ma spesso usata per debugging/compatibilità.
+                embeddedservice_bootstrap.settings.enableReact = false; 
 
                 embeddedservice_bootstrap.init(
                     '00DKB0000014aXF',
@@ -134,56 +168,35 @@
                     }
                 );
 
-                // ASCOLTA GLI EVENTI SALESFORCE PER GESTIRE LA VISIBILITÀ DEL PULSANTE
-                // Appena il sistema è pronto, mostriamo il nostro pulsante
+                // ASCOLTA EVENTI: VISIBILITÀ PULSANTE
+
+                // Mostra il pulsante custom quando il sistema è pronto
                 window.addEventListener("onEmbeddedMessagingReady", () => {
-                    console.log("Agentforce Pronto.");
+                    console.log("Agentforce Pronto. Mostro pulsante custom.");
                     document.getElementById('customChatButton').style.display = 'flex';
                 });
 
-                // Se non riceviamo l'evento "Ready" entro 2 secondi (fallback), mostriamo comunque il pulsante
+                // Fallback: se l'evento ready non arriva subito
                 setTimeout(() => {
                     const btn = document.getElementById('customChatButton');
-                    if (btn.style.display !== 'flex') {
+                    if (btn && btn.style.display !== 'flex') {
+                        console.warn("Timeout ready: forzo la visualizzazione del pulsante.");
                         btn.style.display = 'flex';
                     }
-                }, 2000);
+                }, 4000); // 4 secondi di attesa
 
-                // Evento: Quando la chat viene MINIMIZZATA o CHIUSA dall'utente -> MOSTRA il pulsante custom
+                // Ri-mostra il pulsante custom quando la chat viene minimizzata
                 window.addEventListener("onEmbeddedMessagingWindowMinimized", () => {
+                    console.log("Chat Minimizzata. Mostro pulsante custom.");
                     document.getElementById('customChatButton').style.display = 'flex';
                 });
-                
-                // Nota: MIAW a volte non ha un evento "Closed" distinto, usiamo minimized
                 
             } catch (err) {
                 console.error('Error loading Embedded Messaging: ', err);
-                // In caso di errore mostriamo comunque il pulsante per non lasciare la pagina vuota
+                // In caso di errore, mostriamo il pulsante come fallback
                 document.getElementById('customChatButton').style.display = 'flex';
             }
         };
-
-
-        // 3. Funzione Click sul Pulsante Custom
-        function launchCustomChat() {
-            console.log("Apertura chat...");
-            
-            // NASCONDI IL PULSANTE CUSTOM
-            document.getElementById('customChatButton').style.display = 'none';
-
-            // LANCIA LA CHAT SALESFORCE
-            if(window.embeddedservice_bootstrap && embeddedservice_bootstrap.utilAPI) {
-                embeddedservice_bootstrap.utilAPI.launchChat()
-                .catch(err => {
-                    console.error("Errore avvio:", err);
-                    // Se fallisce, rimostra il pulsante
-                    document.getElementById('customChatButton').style.display = 'flex';
-                    alert("Impossibile avviare la chat al momento.");
-                });
-            } else {
-                console.warn("API non ancora pronte");
-            }
-        }
 
     </script>
 
