@@ -12,15 +12,7 @@
     <h2>Demo Salesforce Embedded Service Web</h2>
 
     <script type="text/javascript">
-        // Rimuovi l'uso di window.addEventListener("load", ...) 
-        // e inserisci direttamente la logica di inizializzazione.
-
-        // NOTA: Se devi attendere che l'intero DOM sia pronto, 
-        // usa 'DOMContentLoaded', ma spesso non è necessario 
-        // per il solo bootstrap di ESW.
-
         try {
-            // Verifica che l'oggetto sia definito prima di usarlo
             if (typeof embeddedservice_bootstrap !== 'undefined') {
                 embeddedservice_bootstrap.settings.language = "it";
 
@@ -34,10 +26,19 @@
                         // PERSONALIZZAZIONE LAUNCHER
                         branding: {
                             launcher: {
+                                // ➡️ Scritta: Serve aiuto?
                                 label: "Serve aiuto?", 
+                                
+                                // ➡️ Immagine: il tuo URL
                                 iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=",
+                                
+                                // Dimensione dell'icona (opzionale)
                                 iconSize: "large",
+                                
+                                // ➡️ Posizione: a destra
                                 position: "right",
+                                
+                                // ➡️ Forma: rotonda
                                 rounded: true
                             },
 
@@ -52,7 +53,7 @@
                     }
                 );
             } else {
-                 console.error("Errore: embeddedservice_bootstrap non è definito.");
+                 console.error("Errore: embeddedservice_bootstrap non è definito dopo il caricamento dello script.");
             }
         } catch (e) {
             console.error("Errore Embedded Service Web v2:", e);
