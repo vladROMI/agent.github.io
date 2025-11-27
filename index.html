@@ -1,35 +1,63 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chat Salesforce ESW</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Salesforce ESW</title>
+
+    <script src="https://service.force.com/embeddedservice/5.0/esw.min.js"></script> 
 </head>
 <body>
-  
-  <h2>Demo Salesforce Embedded Service Web</h2>
+    
+    <h2>Demo Salesforce Embedded Service Web</h2>
 
-  <!-- Il tuo snippet -->
- <script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'it'; // For example, enter 'en' or 'en-US'
+    <script type="text/javascript">
+        // Rimuovi l'uso di window.addEventListener("load", ...) 
+        // e inserisci direttamente la logica di inizializzazione.
 
-			embeddedservice_bootstrap.init(
-				'00DKB0000014aXF',
-				'Web_test',
-				'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
-				{
-					scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
-				}
-			);
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
-</script>
-<script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+        // NOTA: Se devi attendere che l'intero DOM sia pronto, 
+        // usa 'DOMContentLoaded', ma spesso non è necessario 
+        // per il solo bootstrap di ESW.
 
+        try {
+            // Verifica che l'oggetto sia definito prima di usarlo
+            if (typeof embeddedservice_bootstrap !== 'undefined') {
+                embeddedservice_bootstrap.settings.language = "it";
 
+                embeddedservice_bootstrap.init(
+                    "00DKB0000014aXF",
+                    "Web",
+                    "https://pianidibobbio.my.site.com/ESWWebtest1763410614711",
+                    {
+                        scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
+
+                        // PERSONALIZZAZIONE LAUNCHER
+                        branding: {
+                            launcher: {
+                                label: "Serve aiuto?", 
+                                iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=",
+                                iconSize: "large",
+                                position: "right",
+                                rounded: true
+                            },
+
+                            // COLORI DEL BOTTONE E TESTO
+                            colors: {
+                                brandPrimary: "#0070d2",
+                                brandSecondary: "#ffffff",
+                                launcherBackground: "#ffffff",
+                                launcherText: "#333333"
+                            }
+                        }
+                    }
+                );
+            } else {
+                 console.error("Errore: embeddedservice_bootstrap non è definito.");
+            }
+        } catch (e) {
+            console.error("Errore Embedded Service Web v2:", e);
+        }
+    </script>
+    
 </body>
 </html>
