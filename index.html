@@ -1,42 +1,55 @@
-<script type="text/javascript">
-  window.addEventListener("load", function () {
-    try {
-      embeddedservice_bootstrap.settings.language = "it";
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat Salesforce ESW</title>
+</head>
+<body>
+  
+  <h2>Demo Salesforce Embedded Service Web</h2>
 
-      embeddedservice_bootstrap.init(
-        "00DKB0000014aXF",                
-        "Web",                             
-        "https://pianidibobbio.my.site.com/ESWWeb1761557111965", 
-        {
-          scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
+  <!-- Il tuo snippet -->
+  <script type="text/javascript">
+    window.addEventListener("load", function () {
+      try {
+        embeddedservice_bootstrap.settings.language = "it";
 
-          
-          //PERSONALIZZAZIONE LAUNCHER
-          branding: {
-            launcher: {
-              label: "Serve aiuto?",   // Sritta
-              iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=", 
-              iconSize: "large",       
-              //Ingrandisce l’icona del launcher (small | medium | large)
-              position: "right",       
-              rounded: true            
-            },
+        embeddedservice_bootstrap.init(
+          "00DKB0000014aXF",
+          "Web",
+          "https://pianidibobbio.my.site.com/ESWWebtest1763410614711",
+          {
+            scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
 
-            //  COLORI DEL BOTTONE E TESTO
-            colors: {
-              brandPrimary: "#0070d2",    // sfondo del launcher
-              brandSecondary: "#ffffff",  // colore testo "Serve aiuto?"
-              launcherBackground: "#ffffff",
-              launcherText: "#333333"
+            // PERSONALIZZAZIONE LAUNCHER
+            branding: {
+              launcher: {
+                label: "Serve aiuto?", 
+                iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=",
+                iconSize: "large",
+                position: "right",
+                rounded: true
+              },
+
+              // COLORI DEL BOTTONE E TESTO
+              colors: {
+                brandPrimary: "#0070d2",
+                brandSecondary: "#ffffff",
+                launcherBackground: "#ffffff",
+                launcherText: "#333333"
+              }
             }
           }
-        }
-      );
-    } catch (e) {
-      console.error("Errore Embedded Service Web v2:", e);
-    }
-  });
-</script>
+        );
+      } catch (e) {
+        console.error("Errore Embedded Service Web v2:", e);
+      }
+    });
+  </script>
 
-<!-- Script Salesforce V2 -->
-<script src="https://service.force.com/embeddedservice/5.0/esw.min.js"></script>
+  <!-- Script Salesforce V2 -->
+  <script src="https://service.force.com/embeddedservice/5.0/esw.min.js"></script>
+
+</body>
+</html>
