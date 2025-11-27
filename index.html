@@ -1,96 +1,83 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Demo Embedded Service Chat - Pulsante Personalizzato</title>
-    <!-- Configurazione per la visualizzazione mobile -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
-    
-    <!-- CSS Customizzato -->
-    <style type='text/css'>
-        /* 
-         * Stile personalizzato per il pulsante di aiuto minimizzato. 
-         * Si noti che le classi .embeddedServiceHelpButton e .helpButton .uiButton 
-         * sono le classi standard utilizzate dal widget Embedded Service per il pulsante di aiuto [8, 9].
-         */
-        .embeddedServiceHelpButton .helpButton .uiButton {
-            /* Stile del contenitore del pulsante per un aspetto Bootstrap */
-            background-color: #007bff; /* Blu tipico di Bootstrap */
-            color: #ffffff;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            border-radius: 4px;
-            padding: 10px 15px;
-            display: inline-flex; /* Permette allineamento icona e testo */
-            align-items: center;
-            justify-content: center;
-            line-height: 1; 
-            border: 1px solid #007bff;
-        }
-        
-        /* Aggiunge l'icona (simbolo Unicode di un punto interrogativo in una bolla di dialogo) */
-        .embeddedServiceHelpButton .helpButton .uiButton:before {
-            content: "💬\00a0?"; /* Emoji/Unicode di bolla di dialogo + punto interrogativo + spazio non interrompibile */
-            font-size: 1.2em;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
+<meta charset="UTF-8">
+<title>Chat Salesforce Custom Button</title>
+<style>
+  /* Stile del pulsante custom */
+  #customChatButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #0070d2;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 9999;
+  }
 
-        /* Stile al passaggio del mouse (hover) */
-        .embeddedServiceHelpButton .helpButton .uiButton:hover {
-            background-color: #0056b3; 
-            border-color: #0056b3;
-            cursor: pointer;
-        }
-
-        /* Stili aggiuntivi per garantire la visibilità se si usasse un contenitore con ID */
-        #body-content {
-            padding: 20px;
-        }
-    </style>
-    
+  #customChatButton:hover {
+    background-color: #005fb2;
+  }
+</style>
 </head>
-<body onload="onBodyLoaded()">
+<body>
 
-    <div id="body-content">
-        <h1>Benvenuto sul nostro sito web!</h1>
-        <p>Questa è una pagina di prova per visualizzare il widget di Embedded Service Chat.</p>
-        <p>Il pulsante di aiuto dovrebbe apparire nell'angolo in basso a destra con il testo e l'icona personalizzati.</p>
-    </div>
+<!-- Pulsante personalizzato -->
+<button id="customChatButton">Serve aiuto?</button>
 
-    <!-- Snippet Embedded Service (Dovrebbe essere posizionato prima della chiusura del </body> tag) -->
-    <script type='text/javascript'>
-        function initEmbeddedMessaging() {
-            try {
-                // Imposta la lingua in italiano
-                embeddedservice_bootstrap.settings.language = 'it'; // Per esempio, inserisci 'en' o 'en-US' [10]
+<script type='text/javascript'>
+// Funzione di inizializzazione Embedded Messaging
+function initEmbeddedMessaging() {
+    try {
+        // Nascondi il pulsante standard (se presente)
+        embeddedservice_bootstrap.settings.displayHelpButton = false;
 
-                // Impostazioni per il pulsante minimizzato:
-                // Assicura che il pulsante di aiuto predefinito sia visualizzato [6]
-                embeddedservice_bootstrap.settings.displayHelpButton = true; 
-                
-                // Imposta il testo personalizzato per il pulsante quando gli agenti sono online (defaultMinimizedText è disponibile per snippet v3.0+) [7, 11]
-                embeddedservice_bootstrap.settings.defaultMinimizedText = 'Serve Aiuto?'; 
+        embeddedservice_bootstrap.settings.language = 'it';
 
-                embeddedservice_bootstrap.init(
-                    '00DKB0000014aXF',
-                    'Web_test',
-                    'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
-                    {
-                        scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
-                    }
-                );
-            } catch (err) {
-                console.error('Error loading Embedded Messaging: ', err);
+        embeddedservice_bootstrap.init(
+            '00DKB0000014aXF',
+            'Web_test',
+            'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
+            {
+                scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
             }
-        };
+        );
 
-        // Funzione onBodyLoaded vuota, mantenuta se si volesse implementare l'accessibilità mobile [12, 13]
-        function onBodyLoaded() { 
-            // La logica di accessibilità mobile (toggleInert) andrebbe qui se richiesta [13]
-        }
-    </script>
-    <script type='text/javascript' src='https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+        // Gestione chiusura chat per far ricomparire il pulsante
+        embeddedservice_bootstrap.addEventHandler('onChatEnded', function() {
+            document.getElementById('customChatButton').style.display = 'block';
+        });
+
+    } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+    }
+}
+
+// Carica lo script bootstrap di Salesforce
+(function() {
+    var s = document.createElement('script');
+    s.src = 'https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js';
+    s.onload = initEmbeddedMessaging;
+    s.type = 'text/javascript';
+    document.head.appendChild(s);
+})();
+
+// Gestione click sul pulsante custom
+document.getElementById('customChatButton').addEventListener('click', function() {
+    // Nascondi il pulsante
+    this.style.display = 'none';
+    // Avvia la chat
+    if (window.embeddedservice_bootstrap) {
+        embeddedservice_bootstrap.startChat();
+    } else {
+        console.error('Embedded Messaging non inizializzato.');
+    }
+});
+</script>
 
 </body>
 </html>
