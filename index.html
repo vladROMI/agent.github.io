@@ -2,52 +2,88 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Salesforce ESW</title>
-
-    <script src="https://service.force.com/embeddedservice/5.0/esw.min.js"></script> 
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #0070d2;
+        }
+        .info-box {
+            background: #f3f3f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     
     <h2>Demo Salesforce Embedded Service Web</h2>
+    <div class="info-box">
+        <p><strong>Stato:</strong> Chat inizializzata</p>
+        <p>Il bottone della chat dovrebbe apparire in basso a destra</p>
+    </div>
 
+    <!-- Caricamento Script ESW -->
+    <script src="https://service.force.com/embeddedservice/5.0/esw.min.js"></script>
+    
     <script type="text/javascript">
-      
-        try {
-            // Verifica se l'oggetto è disponibile
-            if (typeof embeddedservice_bootstrap !== 'undefined') {
-                embeddedservice_bootstrap.settings.language = "it";
-
+        var initESW = function(gslbBaseURL) {
+            try {
+                // Configurazione delle impostazioni
+                embeddedservice_bootstrap.settings.language = 'it';
+                
+                // Inizializzazione
                 embeddedservice_bootstrap.init(
-                    "00DKB0000014aXF",
-                    "Web",
-                    "https://pianidibobbio.my.site.com/ESWWebtest1763410614711",
+                    '00DKB0000014aXF',
+                    'Web',
+                    'https://pianidibobbio.my.site.com/ESWWebtest1763410614711',
                     {
-                        scrt2URL: "https://pianidibobbio.my.salesforce-scrt.com",
-
-                        // CONFIGURAZIONE PERSONALIZZATA
-                        branding: {
-                            launcher: {
-                                label: "Serve aiuto?", 
-                                iconURL: "https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=", // ✅ Tua richiesta
-                                iconSize: "large",
-                                position: "right",
-                                rounded: true      
-                            },
-
-                            colors: {
-                                brandPrimary: "#0070d2",
-                                brandSecondary: "#ffffff",
-                                launcherBackground: "#ffffff",
-                                launcherText: "#333333"
-                            }
-                        }
+                        scrt2URL: 'https://pianidibobbio.my.salesforce-scrt.com'
                     }
                 );
+                
+                // Personalizzazione DOPO l'init
+                embeddedservice_bootstrap.settings.branding = {
+                    launcher: {
+                        label: 'Aiuto',  // ✅ TESTO BREVE (max 5-6 caratteri)
+                        iconURL: 'https://pianidibobbio.file.force.com/sfc/dist/version/renditionDownload?rendition=ORIGINAL_Jpg&versionId=068KB000006Bg5z&operationContext=DELIVERY&contentId=05TKB00000cW6Zd&page=0&d=/a/KB000000oQmX/rf61g94muITSDNRmmLNR7mVLk8Bq0k3Y1gXLZ_jPoAY&oid=00DKB0000014aXF&dpt=null&viewId=',
+                        iconSize: 'large',
+                        position: 'right',
+                        rounded: true
+                    },
+                    colors: {
+                        brandPrimary: '#0070d2',
+                        brandSecondary: '#ffffff',
+                        launcherBackground: '#ffffff',
+                        launcherText: '#333333'
+                    }
+                };
+                
+                console.log('✅ ESW inizializzato correttamente');
+                
+            } catch (e) {
+                console.error('❌ Errore inizializzazione ESW:', e);
             }
-        } catch (e) {
-            console.error("Errore Embedded Service Web v2:", e);
+        };
+
+        // Avvio automatico
+        if (!window.embedded_svc) {
+            var s = document.createElement('script');
+            s.setAttribute('src', 'https://pianidibobbio.my.site.com/ESWWebtest1763410614711/assets/js/bootstrap.min.js');
+            s.onload = function() {
+                initESW(null);
+            };
+            document.body.appendChild(s);
+        } else {
+            initESW('https://service.force.com');
         }
     </script>
-
 </body>
 </html>
